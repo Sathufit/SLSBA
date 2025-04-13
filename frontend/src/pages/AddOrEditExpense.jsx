@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import '../Styles/AddOrEditExpense.css';
+import '../styles/AddOrEditExpense.css';
 import AdminSidebar from "../components/AdminSidebar";
 
 const AddOrEditExpense = () => {
