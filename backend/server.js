@@ -20,12 +20,7 @@ app.use(cors({
 // ✅ Serve uploaded static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ Health check route
-app.get("/", (req, res) => {
-  res.send("✅ SLSBA API is running");
-});
-
-// ✅ Core Modules
+// ✅ Core API Modules
 app.use("/api/tournaments", require("./routes/tournamentRoutes"));
 app.use("/api/tournament-registrations", require("./routes/tournamentRegistrationRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
@@ -34,17 +29,28 @@ app.use("/api/training", require("./routes/trainingRoutes"));
 app.use("/api/players", require("./routes/playeroute"));
 app.use("/api/news", require("./routes/NewsRoutes")); 
 app.use("/api/media", require("./routes/MediaRoutes")); 
-
-
-// ✅ Feedback and Ticket System
 app.use("/api/feedback", require("./routes/feedbackRoutes"));
 app.use("/api/tickets", require("./routes/ticketRoutes"));
-
-// ✅ Finance Modules
 app.use("/api/incomes", require("./routes/incomes"));
 app.use("/api/expenses", require("./routes/expenseRoutes"));
 
-// ✅ Start Server after DB Connect
+// ✅ Optional health check (use this for monitoring tools only)
+app.get("/api/health", (req, res) => {
+  res.send("✅ SLSBA API is running");
+});
+
+// ✅ Serve frontend build in production
+if (process.env.NODE_ENV === "production") {
+  const frontendPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(frontendPath));
+
+  // Catch-all for all frontend routes
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+  });
+}
+
+// ✅ Start server after DB connects
 const startServer = async () => {
   try {
     await connectDB();
@@ -57,15 +63,6 @@ const startServer = async () => {
     process.exit(1);
   }
 };
-// ✅ Serve frontend build in production
-if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../frontend/dist");
-  app.use(express.static(frontendPath));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-  });
-}
 
 startServer();
 
