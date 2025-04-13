@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Training = require("../Models/trainingmodel");
+const Training = require("../models/trainingmodel");
 
 // Get all training programs
 const getTrainings = async (req, res) => {
