@@ -10,8 +10,8 @@ const updateAdminPassword = async () => {
       useUnifiedTopology: true,
     });
 
-    const email = "admin@slsba.com"; // Ensure this matches Postman input
-    const plainPassword = "Sathu2540"; // This must be the password you will use in Postman
+    const email = "tarini@slsba.com"; // Ensure this matches Postman input
+    const plainPassword = "Tarini123"; // This must be the password you will use in Postman
 
     // ✅ Hash the password
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
