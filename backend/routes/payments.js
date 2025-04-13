@@ -1,6 +1,5 @@
 const express = require("express");
 require('dotenv').config();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY); // ✅ Load from .env
 const router = express.Router();
 
 router.post("/create-checkout-session", async (req, res) => {
