@@ -292,7 +292,11 @@ const TrainingPrograms = () => {
                   </div>
                   <div className="program-footer">
                     <button 
+<<<<<<< HEAD
                       className="register-btn pulse-animation"
+=======
+                      className="register-btn2"
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
                       onClick={() => openRegisterForm(program)}
                     >
                       Register Now <i className="fas fa-arrow-right"></i>

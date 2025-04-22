@@ -28,6 +28,15 @@ const AdminTournaments = () => {
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [expandedRow, setExpandedRow] = useState(null);
   const [showBracket, setShowBracket] = useState(null);
+<<<<<<< HEAD
+=======
+
+  //report
+  const [showReport, setShowReport] = useState(null); // stores tournament ID
+  const [reportData, setReportData] = useState(null);
+  const [loadingReport, setLoadingReport] = useState(false);
+
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   
   // State for data
   const [tournaments, setTournaments] = useState([]);
@@ -416,11 +425,34 @@ const handleSaveTournamentEdit = async () => {
       };
     });
   };
+<<<<<<< HEAD
+=======
+  //report 
+  const fetchReport = async (tournamentId) => {
+    try {
+      setLoadingReport(true);
+      const res = await axios.get(`http://localhost:5001/api/tournaments/${tournamentId}/report`);
+      setReportData(res.data);
+      setShowReport(tournamentId);
+    } catch (error) {
+      console.error("❌ Error fetching report:", error);
+      showToast("❌ Failed to fetch report", "error");
+    } finally {
+      setLoadingReport(false);
+    }
+  };
+  
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   // 🎯 Function to add a new player field
 const addNewPlayerField = () => {
   setEditedData((prevData) => ({
     ...prevData,
+<<<<<<< HEAD
     players: [...(prevData.players || []), { name: "", age: "" }] // Add new player field
+=======
+    players:
+     [...(prevData.players || []), { name: "", age: "" }] // Add new player field
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   }));
   
 };
@@ -746,6 +778,7 @@ const addNewPlayerField = () => {
                 </td>
                 <td>
                   <div className="action-buttons-cell">
+<<<<<<< HEAD
                     <motion.button
                       className="table-action-btn view-btn"
                       whileHover={{ scale: 1.05 }}
@@ -755,6 +788,16 @@ const addNewPlayerField = () => {
                       View Bracket
                     </motion.button>
 
+=======
+                  <motion.button
+                      className="table-action-btn report-btn"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => fetchReport(tournament._id)}
+                    >
+                      <FileText size={14} /> Report
+                    </motion.button>
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
                     <motion.button
                       className="table-action-btn edit-btn"
                       whileHover={{ scale: 1.05 }}
@@ -1476,6 +1519,64 @@ const addNewPlayerField = () => {
           </motion.div>
         )}
       </AnimatePresence>
+<<<<<<< HEAD
+=======
+      <AnimatePresence>
+  {showReport && reportData && (
+    <motion.div 
+      className="modal-backdrop"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowReport(null)}
+    >
+      <motion.div 
+        className="report-modal"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-header">
+          <h2>Tournament Report</h2>
+          <button className="close-btn" onClick={() => setShowReport(null)}>
+            <X size={20} />
+          </button>
+        </div>
+        <div className="modal-body">
+          <p><strong>Tournament:</strong> {reportData.tournamentName}</p>
+          <p><strong>Total Registered Teams:</strong> {reportData.totalRegistrations}</p>
+
+          <table className="report-table">
+            <thead>
+              <tr>
+                <th>School</th>
+                <th>School ID</th>
+                <th>Email</th>
+                <th>Players</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportData.registeredTeams.map((team, index) => (
+                <tr key={index}>
+                  <td>{team.schoolName}</td>
+                  <td>{team.schoolID}</td>
+                  <td>{team.email}</td>
+                  <td>{team.players.length}</td>
+                  <td>{team.paymentStatus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
     </div>
   );
 };

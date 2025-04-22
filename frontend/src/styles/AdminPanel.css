@@ -6,6 +6,7 @@
 }
 
 .admin-panel {
+<<<<<<< HEAD
   margin-left: 250px;
   padding: 20px;
   width: calc(100% - 250px);
@@ -13,6 +14,16 @@
   background-color: #f5f7fa;
   min-height: 100vh;
   box-sizing: border-box;
+=======
+  flex: 1;
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  padding: 10px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: auto;
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 }
 
 .admin-panel.collapsed {
@@ -20,9 +31,69 @@
   width: calc(100% - 80px);
 }
 
+<<<<<<< HEAD
 .content-wrapper {
   max-width: 1400px;
   margin: 70px auto 0;
+=======
+/* Content wrapper */
+.content-wrapper {
+  margin-top: 0;
+  padding: 10px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tab content and table container */
+.tab-content {
+  width: 100%;
+  padding: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table-container {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+}
+
+/* Table Styling */
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+/* Column width adjustments */
+.admin-table th.name-cell,
+.admin-table td.name-cell {
+  width: 15%;
+}
+
+.admin-table th.email-cell,
+.admin-table td.email-cell {
+  width: 20%;
+}
+
+.admin-table th.message-cell,
+.admin-table td.message-cell {
+  width: 40%;
+}
+
+.admin-table th.date-cell,
+.admin-table td.date-cell {
+  width: 15%;
+}
+
+.admin-table th.action-cell,
+.admin-table td.action-cell {
+  width: 10%;
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 }
 
 /* Tabs Navigation */
@@ -59,6 +130,7 @@
   color: white;
 }
 
+<<<<<<< HEAD
 .tab-content {
   background-color: white;
   border-radius: 10px;
@@ -66,12 +138,18 @@
   overflow: hidden;
 }
 
+=======
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 /* Panel Header */
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+<<<<<<< HEAD
   padding: 20px 25px;
+=======
+  padding: 15px 20px;
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   border-bottom: 1px solid #edf2f7;
 }
 
@@ -102,6 +180,7 @@
 }
 
 /* Table Styling */
+<<<<<<< HEAD
 .table-container {
   overflow-x: auto;
 }
@@ -112,6 +191,8 @@
   border-spacing: 0;
 }
 
+=======
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 .admin-table th,
 .admin-table td {
   padding: 16px 20px;
@@ -292,7 +373,11 @@
   }
   
   .content-wrapper {
+<<<<<<< HEAD
     margin-top: 60px;
+=======
+    margin-top: 15px;
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   }
   
   .admin-table th,
@@ -327,10 +412,25 @@
   .reply-textarea {
     min-height: 60px;
   }
+<<<<<<< HEAD
+=======
+  
+  .table-layout {
+    table-layout: auto; /* Allow dynamic width on small screens */
+  }
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 }
 
 @media screen and (max-width: 576px) {
   .content-wrapper {
+<<<<<<< HEAD
     margin-top: 50px;
+=======
+    margin-top: 10px;
+  }
+  
+  .admin-panel {
+    padding: 10px;
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   }
 }

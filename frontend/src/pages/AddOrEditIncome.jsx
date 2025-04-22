@@ -7,9 +7,15 @@ import AdminSidebar from "../components/AdminSidebar";
 const AddOrEditIncome = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+<<<<<<< HEAD
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+=======
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 
   const [form, setForm] = useState({
     tournamentName: "", 
@@ -19,6 +25,7 @@ const AddOrEditIncome = () => {
     sponsorships: ""
   });
 
+<<<<<<< HEAD
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -56,6 +63,66 @@ const AddOrEditIncome = () => {
         });
     }
   }, [id]);
+=======
+  useEffect(() => {
+    if (id) {
+      fetchIncomeDetails();
+    }
+  }, [id]);
+
+  const [adminTournaments, setAdminTournaments] = useState([]);
+
+useEffect(() => {
+  fetchAdminTournaments();
+}, []);
+
+const fetchAdminTournaments = async () => {
+  try {
+    const res = await axios.get("http://localhost:5001/api/tournaments/all");
+    setAdminTournaments(res.data);
+  } catch (error) {
+    console.error("Error fetching tournaments:", error);
+  }
+};
+
+
+  const fetchIncomeDetails = async () => {
+    setIsLoading(true);
+    try {
+      const res = await axios.get(`http://localhost:5001/api/incomes/${id}`);
+      const incomeData = res.data;
+  
+      // Format date
+      const formattedDate = incomeData.incomeDate
+        ? new Date(incomeData.incomeDate).toISOString().split("T")[0]
+        : "";
+  
+      // Clean numeric fields from "$" if it accidentally exists
+      const clean = (v) =>
+        typeof v === "string" ? v.replace(/\$/g, "") : v;
+  
+      setForm({
+        ...incomeData,
+        incomeDate: formattedDate,
+        entryFees: clean(incomeData.entryFees),
+        ticketSales: clean(incomeData.ticketSales),
+        sponsorships: clean(incomeData.sponsorships),
+      });
+    } catch (error) {
+      console.error("Error fetching income details:", error);
+      showNotification("Failed to fetch income details", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const showNotification = (message, type = "success") => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: "", type: "" });
+    }, 3000);
+  };
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   
   const validateForm = () => {
     const newErrors = {};
@@ -117,20 +184,33 @@ const AddOrEditIncome = () => {
     try {
       if (id) {
         await axios.put(`http://localhost:5001/api/incomes/update/${id}`, data);
+<<<<<<< HEAD
         alert("Income updated successfully");
       } else {
         await axios.post("http://localhost:5001/api/incomes/add", data);
         alert("Income added successfully");
+=======
+        showNotification("Income updated successfully");
+      } else {
+        await axios.post("http://localhost:5001/api/incomes/add", data);
+        showNotification("Income added successfully");
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
       }
       navigate("/admin/finance");
     } catch (error) {
       console.error("Error saving income:", error);
+<<<<<<< HEAD
       alert("Failed to save income. Please try again.");
+=======
+      showNotification("Failed to save income. Please try again.", "error");
+    } finally {
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
       setIsLoading(false);
     }
   };
 
   return (
+<<<<<<< HEAD
     <div className={`admin-layout ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
       <AdminSidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
       <div className="main-content">
@@ -150,10 +230,60 @@ const AddOrEditIncome = () => {
                 className={`form-control ${errors.tournamentName ? 'is-invalid' : ''}`}
                 required 
               />
+=======
+    <AdminSidebar>
+      <div className="content-wrapper">
+        {notification.show && (
+          <div className={`notification ${notification.type}`}>
+            {notification.message}
+          </div>
+        )}
+        
+        <div className="admin-header">
+          <h1>SLSBA Admin Dashboard</h1>
+          <div className="admin-actions">
+            <div className="search-container">
+              <input type="text" placeholder="Search..." className="search-input" />
+              <button className="search-button">
+                <i className="search-icon"></i>
+              </button>
+            </div>
+            <div className="admin-profile">
+              <span>Admin</span>
+              <div className="profile-avatar">A</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="add-edit-income-container card-container">
+          <h2 className="section-title">
+            {id ? "Edit Income" : "Add New Income"}
+          </h2>
+          <form onSubmit={handleSubmit} className="income-form">
+            <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="tournamentName">Tournament Name</label>
+              <select
+                id="tournamentName"
+                name="tournamentName"
+                value={form.tournamentName}
+                onChange={handleChange}
+                className={`form-input ${errors.tournamentName ? 'is-invalid' : ''}`}
+                required
+              >
+                <option value="">Select a tournament</option>
+                {adminTournaments.map((t) => (
+                  <option key={t._id} value={t.tournamentName}>
+                    {t.tournamentName}
+                  </option>
+                ))}
+              </select>
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
               {errors.tournamentName && (
                 <div className="error-message">{errors.tournamentName}</div>
               )}
             </div>
+<<<<<<< HEAD
 
             <div className="form-group">
               <label htmlFor="tournamentDate">Tournament Date</label>
@@ -235,6 +365,91 @@ const AddOrEditIncome = () => {
                 type="button" 
                 className="btn btn-secondary"
                 onClick={() => navigate("/")}
+=======
+              <div className="form-group">
+                <label htmlFor="tournamentDate">Tournament Date</label>
+                <input
+                  id="tournamentDate"
+                  type="date"
+                  name="tournamentDate"
+                  value={form.tournamentDate}
+                  onChange={handleChange}
+                  className={`form-input ${errors.tournamentDate ? 'is-invalid' : ''}`}
+                  required
+                />
+                {errors.tournamentDate && (
+                  <div className="error-message">{errors.tournamentDate}</div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="entryFees">Entry Fees</label>
+                <input 
+                  id="entryFees"
+                  type="number" 
+                  name="entryFees" 
+                  value={form.entryFees} 
+                  onChange={handleChange} 
+                  placeholder="Enter entry fees amount" 
+                  min="0"
+                  step="0.01"
+                  className={`form-input ${errors.entryFees ? 'is-invalid' : ''}`}
+                />
+                {errors.entryFees && (
+                  <div className="error-message">{errors.entryFees}</div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ticketSales">Ticket Sales</label>
+                <input 
+                  id="ticketSales"
+                  type="number" 
+                  name="ticketSales" 
+                  value={form.ticketSales} 
+                  onChange={handleChange} 
+                  placeholder="Enter ticket sales amount" 
+                  min="0"
+                  step="0.01"
+                  className={`form-input ${errors.ticketSales ? 'is-invalid' : ''}`}
+                />
+                {errors.ticketSales && (
+                  <div className="error-message">{errors.ticketSales}</div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="sponsorships">Sponsorships</label>
+                <input 
+                  id="sponsorships"
+                  type="number" 
+                  name="sponsorships" 
+                  value={form.sponsorships} 
+                  onChange={handleChange} 
+                  placeholder="Enter sponsorship amount" 
+                  min="0"
+                  step="0.01"
+                  className={`form-input ${errors.sponsorships ? 'is-invalid' : ''}`}
+                />
+                {errors.sponsorships && (
+                  <div className="error-message">{errors.sponsorships}</div>
+                )}
+              </div>
+            </div>
+
+            <div className="form-buttons">
+              <button 
+                type="submit" 
+                className="submit-button"
+                disabled={isLoading}
+              >
+                {isLoading ? "Saving..." : (id ? "Update Income" : "Add Income")}
+              </button>
+              <button 
+                type="button" 
+                className="cancel-button"
+                onClick={() => navigate("/admin/finance")}
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
               >
                 Cancel
               </button>
@@ -242,7 +457,11 @@ const AddOrEditIncome = () => {
           </form>
         </div>
       </div>
+<<<<<<< HEAD
     </div>
+=======
+    </AdminSidebar>
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   );
 };
 

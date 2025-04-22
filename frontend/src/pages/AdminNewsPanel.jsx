@@ -31,12 +31,18 @@ const AdminNewsPanel = () => {
   });
   const [editingId, setEditingId] = useState(null);
   const [editingMediaId, setEditingMediaId] = useState(null);
+<<<<<<< HEAD
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("news"); // "news" or "media"
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
+=======
+  const [activeTab, setActiveTab] = useState("news"); // "news" or "media"
+  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   const showNotification = (message, type) => {
     setNotification({ show: true, message, type });
     setTimeout(() => setNotification({ show: false, message: "", type: "" }), 3000);
@@ -199,10 +205,15 @@ const AdminNewsPanel = () => {
   };
 
   return (
+<<<<<<< HEAD
     <div className="admin-layout">
       <AdminSidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
 
       <div className={`admin-content ${isCollapsed ? 'expanded' : ''}`}>
+=======
+    <AdminSidebar>
+      <div className="content-wrapper">
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
         {notification.show && (
           <div className={`notification ${notification.type}`}>
             {notification.type === "error" ? <AlertIcon size={16} /> : <InfoIcon size={16} />}
@@ -217,7 +228,11 @@ const AdminNewsPanel = () => {
           </div>
         </div>
 
+<<<<<<< HEAD
         <div className="tab-navigation">
+=======
+        <div className="tabs-container">
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
           <button 
             className={`tab-button ${activeTab === 'news' ? 'active' : ''}`} 
             onClick={() => setActiveTab('news')}
@@ -234,7 +249,11 @@ const AdminNewsPanel = () => {
 
         {/* News Section */}
         {activeTab === 'news' && (
+<<<<<<< HEAD
           <div className="content-section">
+=======
+          <div className="tab-content">
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
             <div className="section-header">
               <h2>
                 <NewsIcon size={18} />
@@ -335,11 +354,19 @@ const AdminNewsPanel = () => {
               </div>
             </form>
 
+<<<<<<< HEAD
             <div className="section-header">
+=======
+            <div className="panel-header">
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
               <h2>
                 <NewsIcon size={18} />
                 Published News Articles
               </h2>
+<<<<<<< HEAD
+=======
+              <div className="counter">{news.length} items</div>
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
             </div>
 
             {news.length === 0 ? (
@@ -386,7 +413,11 @@ const AdminNewsPanel = () => {
 
         {/* Media Section */}
         {activeTab === 'media' && (
+<<<<<<< HEAD
           <div className="content-section">
+=======
+          <div className="tab-content">
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
             <div className="section-header">
               <h2>
                 <ImageIcon size={18} />
@@ -459,11 +490,19 @@ const AdminNewsPanel = () => {
               </div>
             </form>
 
+<<<<<<< HEAD
             <div className="section-header">
+=======
+            <div className="panel-header">
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
               <h2>
                 <ImageIcon size={18} />
                 Media Galleries
               </h2>
+<<<<<<< HEAD
+=======
+              <div className="counter">{mediaList.length} items</div>
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
             </div>
 
             {mediaList.length === 0 ? (
@@ -519,7 +558,11 @@ const AdminNewsPanel = () => {
           </div>
         )}
       </div>
+<<<<<<< HEAD
     </div>
+=======
+    </AdminSidebar>
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   );
 };
 

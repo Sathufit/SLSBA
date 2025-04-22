@@ -6,16 +6,28 @@
 }
 
 :root {
+<<<<<<< HEAD
   --primary: #4f46e5;
   --primary-dark: #4338ca;
   --secondary: #f43f5e;
   --secondary-dark: #e11d48;
+=======
+  --primary: #003f7d;           /* Deep Navy Blue */
+  --primary-dark: #002c5a;      /* Darker variant */
+  --secondary: #e15b29;         /* Updated orange color for buttons */
+  --secondary-dark: #c94d20;    /* Darker orange on hover */
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   --light: #f9fafb;
   --dark: #1f2937;
   --text: #374151;
   --text-light: #9ca3af;
+<<<<<<< HEAD
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+=======
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 }
 
 @keyframes fadeIn {
@@ -142,6 +154,7 @@ nav {
 }
 
 /* Buttons */
+<<<<<<< HEAD
 .register-btn {
   background-color: var(--primary);
   color: white;
@@ -163,6 +176,26 @@ nav {
 }
 
 .register-btn:active {
+=======
+.register-btn1 {
+  padding: 0.75rem 1.5rem;
+  background-color: #002c5a;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none; 
+}
+
+.register-btn1:hover {
+  background-color: #991b1b;
+  transform: translateY(-1px);
+}
+
+.register-btn1:active {
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   transform: translateY(0);
 }
 

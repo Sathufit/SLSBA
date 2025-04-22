@@ -173,5 +173,33 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "❌ Internal server error", details: error.message });
   }
 });
+<<<<<<< HEAD
+=======
+router.get("/:id/report", async (req, res) => {
+  const tournamentId = req.params.id;
+
+  try {
+    const tournament = await Tournament.findById(tournamentId);
+    if (!tournament) {
+      return res.status(404).json({ error: "Tournament not found" });
+    }
+
+    const teamCount = await TournamentRegistration.countDocuments({ tournament: tournamentId });
+
+    const teamDetails = await TournamentRegistration.find({ tournament: tournamentId })
+      .select("schoolName schoolID email players paymentStatus createdAt");
+
+    res.status(200).json({
+      tournamentName: tournament.tournamentName,
+      totalRegistrations: teamCount,
+      registeredTeams: teamDetails,
+    });
+  } catch (err) {
+    console.error("❌ Error generating report:", err);
+    res.status(500).json({ error: "Failed to generate report" });
+  }
+});
+
+>>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 
 module.exports = router;
