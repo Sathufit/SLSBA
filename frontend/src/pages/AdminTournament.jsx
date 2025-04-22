@@ -767,16 +767,7 @@ const addNewPlayerField = () => {
                 </td>
                 <td>
                   <div className="action-buttons-cell">
-                    <motion.button
-                      className="table-action-btn view-btn"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowBracket(tournament._id)}
-                    >
-                      View Bracket
-                    </motion.button>
-
-=======
+                  
                   <motion.button
                       className="table-action-btn report-btn"
                       whileHover={{ scale: 1.05 }}

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 // User-side pages
@@ -14,27 +14,21 @@ import CancelPage from "./pages/CancelPage";
 import NewsDetail from "./components/NewsDetail";
 import MediaDetail from "./components/MediaDetail";
 
-
 // Admin-side pages
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
 import AdminTournament from "./pages/AdminTournament";
-
-// Support system pages
-import Support from "./pages/Support";
 import AdminPanel from "./pages/AdminPanel";
-
-// Finance & Payroll pages
 import FinanceHome from "./pages/financeHome";
 import AddOrEditIncome from "./pages/AddOrEditIncome";
 import AddOrEditExpense from "./pages/AddOrEditExpense";
-
-// Training system pages
-import UserApp from "./pages/UserApp";
 import AdminApp from "./pages/AdminApp";
-
-import NewsFeed from "./pages/NewsFeed";
 import AdminNewsPanel from "./pages/AdminNewsPanel";
+
+// Shared pages
+import Support from "./pages/Support";
+import UserApp from "./pages/UserApp";
+import NewsFeed from "./pages/NewsFeed";
 
 // Protected route wrapper
 import ProtectedRoute from "./ProtectedRoute";
@@ -49,7 +43,6 @@ const App = () => {
 
   return (
     <Routes>
-      
       {/* Public User Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<LoginPage />} />
@@ -66,12 +59,10 @@ const App = () => {
       <Route path="/news/:id" element={<NewsDetail />} />
       <Route path="/media/:id" element={<MediaDetail />} />
 
-
       {/* Admin Login */}
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
 
-      {/* Admin Authenticated Routes */}
+      {/* Admin Pages — NO REDIRECT from /admin */}
       <Route
         path="/admin/dashboard"
         element={
@@ -96,11 +87,22 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
-      {/* Training Admin */}
-      <Route path="/admin/add-training" element={<AdminApp />} />
-
-      {/* Finance */}
+      <Route
+        path="/admin/add-training"
+        element={
+          <ProtectedRoute isAdminLoggedIn={isAdminLoggedIn}>
+            <AdminApp />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/news"
+        element={
+          <ProtectedRoute isAdminLoggedIn={isAdminLoggedIn}>
+            <AdminNewsPanel />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/admin/finance"
         element={
@@ -138,14 +140,6 @@ const App = () => {
         element={
           <ProtectedRoute isAdminLoggedIn={isAdminLoggedIn}>
             <AddOrEditExpense />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/news"
-        element={
-          <ProtectedRoute isAdminLoggedIn={isAdminLoggedIn}>
-            <AdminNewsPanel />
           </ProtectedRoute>
         }
       />

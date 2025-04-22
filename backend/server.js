@@ -33,6 +33,8 @@ app.use("/api/tickets", require("./routes/ticketRoutes"));
 app.use("/api/incomes", require("./routes/incomes"));
 app.use("/api/expenses", require("./routes/expenseRoutes"));
 
+
+
 // ✅ Optional health check (use this for monitoring tools only)
 app.get("/api/health", (req, res) => {
   res.send("✅ SLSBA API is running");

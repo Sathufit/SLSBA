@@ -15,8 +15,6 @@ const menuItems = [
   { name: "Training Programs", route: "/admin/add-training", icon: <BookOpen size={20} /> },
   { name: "Finance", route: "/admin/finance", icon: <DollarSign size={20} /> },
   { name: "Users", route: "/admin/users", icon: <Users size={20} /> },
-  { name: "Analytics", route: "/admin/analytics", icon: <BarChart2 size={20} /> },
-  { name: "Settings", route: "/admin/settings", icon: <Settings size={20} /> },
   { name: "Support", route: "/admin/support", icon: <Settings size={20} /> },
 ];
 

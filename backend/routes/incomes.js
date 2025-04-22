@@ -35,13 +35,14 @@ router.post("/add", async (req, res) => {
 // ✅ Get all income details
 router.get("/", async (req, res) => {
   try {
-    const incomes = await Income.find();
-    res.status(200).json(incomes);
+    const data = await Income.find();
+    res.json(data);
   } catch (err) {
-    console.error("Error fetching income records:", err);
-    res.status(500).json({ message: "Error fetching income records", error: err.message });
+    console.error("❌ Error fetching income:", err);
+    res.status(500).json({ error: "Failed to fetch income" });
   }
 });
+
 
 // ✅ Get single income by ID
 router.get("/:id", async (req, res) => {

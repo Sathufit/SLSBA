@@ -168,15 +168,7 @@ const TournamentRegistration = () => {
     required
   />
 </div>
-                  <label className="form-label">Email <span className="required">*</span></label>
-                  <input 
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="form-input"
-                    required
-                  />
+                
                 </div>
 
                 <div className="form-group">

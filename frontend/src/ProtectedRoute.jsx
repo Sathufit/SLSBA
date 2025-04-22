@@ -1,15 +1,14 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
-const ProtectedRoute = ({ isAdminLoggedIn, children }) => {
-
+const ProtectedRoute = ({ children, isAdminLoggedIn }) => {
+  const location = useLocation();
+  
   if (!isAdminLoggedIn) {
-    return <Navigate to="/admin/login" replace />;
+    // Redirect to login if not authenticated, but preserve the requested URL
+    return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
-  const token = localStorage.getItem("adminToken");
-
-  if (!token) {
-    return <Navigate to="/admin/login" replace />;
-  }
+  
+  // Render children if authenticated
   return children;
 };
 

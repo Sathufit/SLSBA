@@ -4,7 +4,6 @@
   --primary-dark: #2980b9;
   --primary-light: #e3f2fd;
   --secondary-color: #2ecc71;
-  --secondary-dark: #27ae60;
   --secondary-light: #e8f5e9;
   --background-color: #f4f6f7;
   --card-background: #ffffff;
@@ -14,7 +13,6 @@
   --danger-color: #e74c3c;
   --danger-dark: #c0392b;
   --warning-color: #f39c12;
-  --success-color: #2ecc71;
   --info-color: #3498db;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.15);

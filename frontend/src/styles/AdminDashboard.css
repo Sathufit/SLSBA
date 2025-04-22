@@ -6,7 +6,6 @@
   --primary-dark: #2c5eb3;
   --secondary-color: #5d6c89;
   --accent-color: #f0f4fd;
-  --success-color: #28a745;
   --warning-color: #ffc107;
   --danger-color: #dc3545;
   --dark-color: #2d3748;
@@ -498,6 +497,47 @@ body {
   border-top-color: white;
   margin-bottom: 20px;
 }
+/* 🔧 Dashboard Stat Cards - Improved Theming */
+.stats-container .stat-card {
+  background-color: var(--card-background);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
+}
+
+.stats-container .stat-icon {
+  background-color: rgba(74, 108, 247, 0.1); /* Soft primary tone */
+  color: var(--primary-color); /* Consistent icon color */
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.stats-container .stat-details h3 {
+  font-size: 14px;
+  color: var(--gray-color);
+  margin-bottom: 5px;
+}
+
+.stats-container .stat-details h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--dark-color);
+  margin-bottom: 3px;
+}
+
+.stats-container .stat-change {
+  color: var(--success-color);
+  font-size: 13px;
+}
+
 
 /* Responsive Adjustments */
 @media (max-width: 1200px) {
