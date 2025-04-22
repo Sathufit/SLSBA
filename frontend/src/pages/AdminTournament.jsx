@@ -1497,6 +1497,61 @@ const addNewPlayerField = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <AnimatePresence>
+  {showReport && reportData && (
+    <motion.div 
+      className="modal-backdrop"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowReport(null)}
+    >
+      <motion.div 
+        className="report-modal"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-header">
+          <h2>Tournament Report</h2>
+          <button className="close-btn" onClick={() => setShowReport(null)}>
+            <X size={20} />
+          </button>
+        </div>
+        <div className="modal-body">
+          <p><strong>Tournament:</strong> {reportData.tournamentName}</p>
+          <p><strong>Total Registered Teams:</strong> {reportData.totalRegistrations}</p>
+
+          <table className="report-table">
+            <thead>
+              <tr>
+                <th>School</th>
+                <th>School ID</th>
+                <th>Email</th>
+                <th>Players</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportData.registeredTeams.map((team, index) => (
+                <tr key={index}>
+                  <td>{team.schoolName}</td>
+                  <td>{team.schoolID}</td>
+                  <td>{team.email}</td>
+                  <td>{team.players.length}</td>
+                  <td>{team.paymentStatus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </div>
   );
 };

@@ -976,6 +976,26 @@ body {
   color: var(--primary);
   margin-bottom: 15px;
 }
+.report-modal {
+  background: white;
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  border-radius: 12px;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
 
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
