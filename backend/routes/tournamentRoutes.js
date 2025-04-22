@@ -173,8 +173,7 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "❌ Internal server error", details: error.message });
   }
 });
-<<<<<<< HEAD
-=======
+
 router.get("/:id/report", async (req, res) => {
   const tournamentId = req.params.id;
 
@@ -200,6 +199,5 @@ router.get("/:id/report", async (req, res) => {
   }
 });
 
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 
 module.exports = router;

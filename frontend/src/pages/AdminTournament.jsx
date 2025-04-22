@@ -28,15 +28,12 @@ const AdminTournaments = () => {
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [expandedRow, setExpandedRow] = useState(null);
   const [showBracket, setShowBracket] = useState(null);
-<<<<<<< HEAD
-=======
+
 
   //report
   const [showReport, setShowReport] = useState(null); // stores tournament ID
   const [reportData, setReportData] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
-
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   
   // State for data
   const [tournaments, setTournaments] = useState([]);
@@ -425,8 +422,7 @@ const handleSaveTournamentEdit = async () => {
       };
     });
   };
-<<<<<<< HEAD
-=======
+
   //report 
   const fetchReport = async (tournamentId) => {
     try {
@@ -442,22 +438,15 @@ const handleSaveTournamentEdit = async () => {
     }
   };
   
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   // 🎯 Function to add a new player field
 const addNewPlayerField = () => {
   setEditedData((prevData) => ({
     ...prevData,
-<<<<<<< HEAD
     players: [...(prevData.players || []), { name: "", age: "" }] // Add new player field
-=======
-    players:
-     [...(prevData.players || []), { name: "", age: "" }] // Add new player field
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
+  
   }));
   
 };
-
-
   return (
     <div className="admin-container">
       {/* Bracket Modal */}
@@ -778,7 +767,6 @@ const addNewPlayerField = () => {
                 </td>
                 <td>
                   <div className="action-buttons-cell">
-<<<<<<< HEAD
                     <motion.button
                       className="table-action-btn view-btn"
                       whileHover={{ scale: 1.05 }}
@@ -797,7 +785,6 @@ const addNewPlayerField = () => {
                     >
                       <FileText size={14} /> Report
                     </motion.button>
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
                     <motion.button
                       className="table-action-btn edit-btn"
                       whileHover={{ scale: 1.05 }}
@@ -1519,8 +1506,6 @@ const addNewPlayerField = () => {
           </motion.div>
         )}
       </AnimatePresence>
-<<<<<<< HEAD
-=======
       <AnimatePresence>
   {showReport && reportData && (
     <motion.div 
@@ -1575,8 +1560,6 @@ const addNewPlayerField = () => {
     </motion.div>
   )}
 </AnimatePresence>
-
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
     </div>
   );
 };

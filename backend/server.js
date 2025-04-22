@@ -24,7 +24,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/tournaments", require("./routes/tournamentRoutes"));
 app.use("/api/tournament-registrations", require("./routes/tournamentRegistrationRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
-app.use("/api/payments", require("./routes/payments"));
 app.use("/api/training", require("./routes/trainingRoutes"));
 app.use("/api/players", require("./routes/playeroute"));
 app.use("/api/news", require("./routes/NewsRoutes")); 

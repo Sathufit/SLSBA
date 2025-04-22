@@ -16,11 +16,8 @@ const menuItems = [
   { name: "Finance", route: "/admin/finance", icon: <DollarSign size={20} /> },
   { name: "Users", route: "/admin/users", icon: <Users size={20} /> },
   { name: "Analytics", route: "/admin/analytics", icon: <BarChart2 size={20} /> },
-<<<<<<< HEAD
   { name: "Settings", route: "/admin/settings", icon: <Settings size={20} /> },
-=======
   { name: "Support", route: "/admin/support", icon: <Settings size={20} /> },
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 ];
 
 const AdminLayout = ({ children }) => {

@@ -1,64 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, MapPin, Phone, Mail, ChevronRight } from "lucide-react";
-<<<<<<< HEAD
 import "../styles/global.css"; // Using the enhanced CSS
-=======
-import "../styles/global.css"; 
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
 import { Link } from "react-router-dom";
 
 const Home = () => {
   const [category, setCategory] = useState("All Categories");
   const [region, setRegion] = useState("All Regions");
   const [visible, setVisible] = useState(false);
-
-  // Animation trigger on page load
-  useEffect(() => {
-    setVisible(true);
-  }, []);
-
-<<<<<<< HEAD
-  const tournaments = [
-    {
-      category: "Under 17",
-      title: "National School Championship",
-      date: "March 15-20, 2025",
-      venue: "Sugathadasa Stadium, Colombo"
-    },
-    {
-      category: "Under 15",
-      title: "Provincial Tournament",
-      date: "April 5-8, 2025",
-      venue: "Royal College Sports Complex"
-    },
-    {
-      category: "Under 19",
-      title: "All Island School Games",
-      date: "May 1-6, 2025",
-      venue: "Kandy Sports Complex"
-    }
-  ];
-=======
   const [tournaments, setTournaments] = useState([]);
 
-useEffect(() => {
-  setVisible(true);
-  fetchTournaments();
-}, []);
+  // Animation trigger on page load and fetch tournaments
+  useEffect(() => {
+    setVisible(true);
+    fetchTournaments();
+  }, []);
 
-
-const fetchTournaments = async () => {
-  try {
-    const res = await fetch("http://localhost:5001/api/tournaments/all"); // 👈 Use correct endpoint
-    if (!res.ok) throw new Error("Failed to fetch");
-    const data = await res.json();
-    setTournaments(data);
-  } catch (err) {
-    console.error("Failed to fetch tournaments", err);
-  }
-};
-
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
+  const fetchTournaments = async () => {
+    try {
+      const res = await fetch("http://localhost:5001/api/tournaments/all");
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setTournaments(data);
+    } catch (err) {
+      console.error("Failed to fetch tournaments", err);
+      // Fallback data if API fails
+      setTournaments([
+        {
+          _id: "1",
+          category: "Under 17",
+          tournamentName: "National School Championship",
+          date: "2025-03-15",
+          venue: "Sugathadasa Stadium, Colombo"
+        },
+        {
+          _id: "2",
+          category: "Under 15",
+          tournamentName: "Provincial Tournament",
+          date: "2025-04-05",
+          venue: "Royal College Sports Complex"
+        },
+        {
+          _id: "3",
+          category: "Under 19",
+          tournamentName: "All Island School Games",
+          date: "2025-05-01",
+          venue: "Kandy Sports Complex"
+        }
+      ]);
+    }
+  };
 
   // Animation classes
   const fadeInClass = visible ? "opacity-100" : "opacity-0";
@@ -94,6 +84,7 @@ const fetchTournaments = async () => {
           <p>Empowering the next generation of champions</p>
         </div>
       </section>
+      
       {/* Tournaments Section */}
       <section className="tournaments-section">
         <div className="section-header">
@@ -120,52 +111,29 @@ const fetchTournaments = async () => {
         </div>
 
         <div className="tournaments-grid">
-<<<<<<< HEAD
-          {tournaments.map((tournament, index) => (
-            <div key={index} className="tournament-card">
-              <span className="category">{tournament.category}</span>
-              <h3>{tournament.title}</h3>
-              <div className="tournament-info">
-                <Calendar size={16} />
-                <span>{tournament.date}</span>
-              </div>
-              <div className="tournament-info">
-                <MapPin size={16} />
-                <span>{tournament.venue}</span>
-              </div>
-              <button className="register-btn">
-                <Link to={`/tournamentReg/${tournament.id}`} className="register-btn">
-                Register Now <ChevronRight size={16} className="inline ml-1" />
-                </Link>
-              </button>
-            </div>
-          ))}
-        </div>
-=======
-            {tournaments
-              .filter(t => 
-                (category === "All Categories" || t.category === category) &&
-                (region === "All Regions" || t.venue?.toLowerCase().includes(region.toLowerCase()))
-              )
-              .map((tournament) => (
-                <div key={tournament._id} className="tournament-card">
-                  <span className="category">{tournament.category}</span>
-                  <h3>{tournament.tournamentName}</h3>
-                  <div className="tournament-info">
-                    <Calendar size={16} />
-                    <span>{new Date(tournament.date).toLocaleDateString()}</span>
-                  </div>
-                  <div className="tournament-info">
-                    <MapPin size={16} />
-                    <span>{tournament.venue}</span>
-                  </div>
-                  <Link to={`/tournamentReg/${tournament._id}`} className="register-btn1">
-                  Register Now <ChevronRight size={16} className="inline ml-1" />
-                  </Link>
+          {tournaments
+            .filter(t => 
+              (category === "All Categories" || t.category === category) &&
+              (region === "All Regions" || t.venue?.toLowerCase().includes(region.toLowerCase()))
+            )
+            .map((tournament) => (
+              <div key={tournament._id} className="tournament-card">
+                <span className="category">{tournament.category}</span>
+                <h3>{tournament.tournamentName}</h3>
+                <div className="tournament-info">
+                  <Calendar size={16} />
+                  <span>{new Date(tournament.date).toLocaleDateString()}</span>
                 </div>
+                <div className="tournament-info">
+                  <MapPin size={16} />
+                  <span>{tournament.venue}</span>
+                </div>
+                <Link to={`/tournamentReg/${tournament._id}`} className="register-btn1">
+                  Register Now <ChevronRight size={16} className="inline ml-1" />
+                </Link>
+              </div>
             ))}
-          </div>
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
+        </div>
       </section>
 
       {/* Training Programs Section */}
@@ -181,15 +149,9 @@ const fetchTournaments = async () => {
                 <li>☑️ Footwork training</li>
                 <li>☑️ Equipment guidance</li>
               </ul>
-<<<<<<< HEAD
-              <button className="register-btn">
+              <Link to="/training" className="register-btn1">
                 Join Now <ChevronRight size={16} className="inline ml-1" />
-              </button>
-=======
-              <Link to={`/training`} className="register-btn1">
-                  Join Now <ChevronRight size={16} className="inline ml-1" />
               </Link>
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
             </div>
           </div>
           <div className="training-card">
@@ -201,15 +163,9 @@ const fetchTournaments = async () => {
                 <li>☑️ Competition preparation</li>
                 <li>☑️ Physical conditioning</li>
               </ul>
-<<<<<<< HEAD
-              <button className="register-btn">
+              <Link to="/training" className="register-btn1">
                 Join Now <ChevronRight size={16} className="inline ml-1" />
-              </button>
-=======
-              <Link to={`/training`} className="register-btn1">
-                  Join Now <ChevronRight size={16} className="inline ml-1" />
               </Link>
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
             </div>
           </div>
           <div className="training-card">
@@ -221,15 +177,9 @@ const fetchTournaments = async () => {
                 <li>☑️ Performance analysis</li>
                 <li>☑️ Tournament support</li>
               </ul>
-<<<<<<< HEAD
-              <button className="register-btn">
+              <Link to="/training" className="register-btn1">
                 Join Now <ChevronRight size={16} className="inline ml-1" />
-              </button>
-=======
-              <Link to={`/training`} className="register-btn1">
-                  Join Now <ChevronRight size={16} className="inline ml-1" />
               </Link>
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
             </div>
           </div>
         </div>
@@ -276,20 +226,20 @@ const fetchTournaments = async () => {
           <div className="footer-section">
             <h3>Quick Links</h3>
             <ul>
-              <li><a href="/about">About Us</a></li>
-              <li><a href="/tournaments">Tournaments</a></li>
-              <li><a href="/programs">Training Programs</a></li>
-              <li><a href="/news">News & Media</a></li>
-              <li><a href="/contact">Contact Us</a></li>
+              <li><Link to="/about">About Us</Link></li>
+              <li><Link to="/tournaments">Tournaments</Link></li>
+              <li><Link to="/training">Training Programs</Link></li>
+              <li><Link to="/news">News & Media</Link></li>
+              <li><Link to="/contact">Contact Us</Link></li>
             </ul>
           </div>
           <div className="footer-section">
             <h3>Programs</h3>
             <ul>
-              <li><a href="#">Beginner's Program</a></li>
-              <li><a href="#">Advanced Training</a></li>
-              <li><a href="#">Elite Training</a></li>
-              <li><a href="#">School Programs</a></li>
+              <li><Link to="/training">Beginner's Program</Link></li>
+              <li><Link to="/training">Advanced Training</Link></li>
+              <li><Link to="/training">Elite Training</Link></li>
+              <li><Link to="/training">School Programs</Link></li>
             </ul>
           </div>
           <div className="footer-section">
@@ -302,8 +252,8 @@ const fetchTournaments = async () => {
         <div className="footer-bottom">
           <p>© 2025 Sri Lanka Schools Badminton Association. All rights reserved.</p>
           <div className="footer-links">
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
+            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/terms">Terms of Service</Link>
           </div>
         </div>
       </footer>

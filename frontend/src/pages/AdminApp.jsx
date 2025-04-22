@@ -13,21 +13,10 @@ const AdminApp = () => {
     location: "",
   });
   const [editingId, setEditingId] = useState(null);
-<<<<<<< HEAD
-  const [isCollapsed, setIsCollapsed] = useState(false);
-=======
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("programs");
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
-<<<<<<< HEAD
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
-=======
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   useEffect(() => {
     fetchData();
   }, []);
@@ -128,256 +117,14 @@ const AdminApp = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <div className={`admin-layout ${isCollapsed ? "sidebar-collapsed" : ""}`}>
-      <AdminSidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      <main className="admin-content">
-=======
     <AdminSidebar>
       <div className="content-wrapper">
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
         {notification.show && (
           <div className={`notification ${notification.type}`}>
             {notification.message}
           </div>
         )}
         
-<<<<<<< HEAD
-        <div className="content-wrapper">
-          <div className="admin-header">
-            <h1>SLSBA Admin Dashboard</h1>
-            <div className="admin-actions">
-              <div className="search-container">
-                <input type="text" placeholder="Search..." className="search-input" />
-                <button className="search-button">
-                  <i className="search-icon"></i>
-                </button>
-              </div>
-              <div className="admin-profile">
-                <span>Admin</span>
-                <div className="profile-avatar">A</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-stats">
-            <div className="stat-card">
-              <div className="stat-icon programs-icon"></div>
-              <div className="stat-content">
-                <h3>{programs.length}</h3>
-                <p>Active Programs</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon players-icon"></div>
-              <div className="stat-content">
-                <h3>{players.length}</h3>
-                <p>Enrolled Players</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon calendar-icon"></div>
-              <div className="stat-content">
-                <h3>{new Date().toLocaleDateString('en-US', { month: 'long' })}</h3>
-                <p>Current Month</p>
-              </div>
-            </div>
-          </div>
-
-          <section className="training-program-section card-container">
-            <h2 className="section-title">
-              {editingId ? "Edit Training Program" : "Create New Training Program"}
-            </h2>
-            <form onSubmit={handleSubmit} className="training-form">
-              <div className="form-grid">
-                <div className="form-group">
-                  <label htmlFor="programname">Program Name</label>
-                  <input
-                    id="programname"
-                    name="programname"
-                    placeholder="Enter program name"
-                    value={form.programname}
-                    onChange={(e) =>
-                      setForm({ ...form, programname: e.target.value })
-                    }
-                    required
-                    className="form-input"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="trainingtype">Training Type</label>
-                  <input
-                    id="trainingtype"
-                    name="trainingtype"
-                    placeholder="Enter training type"
-                    value={form.trainingtype}
-                    onChange={(e) =>
-                      setForm({ ...form, trainingtype: e.target.value })
-                    }
-                    required
-                    className="form-input"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="time">Time</label>
-                  <input
-                    id="time"
-                    name="time"
-                    placeholder="Enter schedule time"
-                    value={form.time}
-                    onChange={(e) => setForm({ ...form, time: e.target.value })}
-                    required
-                    className="form-input"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="location">Location</label>
-                  <input
-                    id="location"
-                    name="location"
-                    placeholder="Enter location"
-                    value={form.location}
-                    onChange={(e) =>
-                      setForm({ ...form, location: e.target.value })
-                    }
-                    required
-                    className="form-input"
-                  />
-                </div>
-              </div>
-              <div className="form-buttons">
-                <button type="submit" className="submit-button">
-                  {editingId ? "Update Program" : "Add Program"}
-                </button>
-                {editingId && (
-                  <button type="button" className="cancel-button" onClick={resetForm}>
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </form>
-          </section>
-
-          <div className="tabs-container">
-            <div 
-              className={`tab ${activeTab === 'programs' ? 'active' : ''}`}
-              onClick={() => setActiveTab('programs')}
-            >
-              Training Programs
-            </div>
-            <div 
-              className={`tab ${activeTab === 'players' ? 'active' : ''}`}
-              onClick={() => setActiveTab('players')}
-            >
-              Player Enrollments
-            </div>
-          </div>
-
-          {activeTab === 'programs' && (
-            <section className="existing-programs card-container">
-              <h2 className="section-title">Existing Programs</h2>
-              {isLoading ? (
-                <div className="loading-container">
-                  <div className="loader"></div>
-                  <p>Loading programs...</p>
-                </div>
-              ) : programs.length === 0 ? (
-                <div className="no-data">
-                  <p>No training programs available.</p>
-                  <p>Create your first program using the form above.</p>
-                </div>
-              ) : (
-                <div className="card-grid">
-                  {programs.map((p) => (
-                    <div key={p._id} className="card program-card">
-                      <div className="card-badge">{p.trainingtype}</div>
-                      <h3>{p.programname}</h3>
-                      <div className="card-details">
-                        <div className="detail-item">
-                          <span className="detail-icon time-icon"></span>
-                          <span className="detail-text">{p.time}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span className="detail-icon location-icon"></span>
-                          <span className="detail-text">{p.location}</span>
-                        </div>
-                      </div>
-                      <div className="card-actions">
-                        <button className="edit-btn" onClick={() => handleEdit(p)}>
-                          Edit
-                        </button>
-                        <button className="delete-btn" onClick={() => handleDelete(p._id)}>
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-
-          {activeTab === 'players' && (
-            <section className="player-enrollments card-container">
-              <h2 className="section-title">Player Enrollments</h2>
-              {isLoading ? (
-                <div className="loading-container">
-                  <div className="loader"></div>
-                  <p>Loading enrollments...</p>
-                </div>
-              ) : players.length === 0 ? (
-                <div className="no-data">
-                  <p>No players enrolled yet.</p>
-                  <p>Players will appear here once they enroll in a program.</p>
-                </div>
-              ) : (
-                <div className="players-list">
-                  <div className="player-table-header">
-                    <div className="header-cell">Player Name</div>
-                    <div className="header-cell">School</div>
-                    <div className="header-cell">Contact</div>
-                    <div className="header-cell">Email</div>
-                    <div className="header-cell">Guardian</div>
-                    <div className="header-cell">Actions</div>
-                  </div>
-                  
-                  {players.map((player, index) => (
-                    <div key={index} className="player-row">
-                      <div className="player-cell name-cell">
-                        <div className="player-avatar">{player.fullname.charAt(0)}</div>
-                        <div>
-                          <div className="player-name">{player.fullname}</div>
-                          <div className="player-detail">
-                            {player.gender && `${player.gender.charAt(0).toUpperCase() + player.gender.slice(1)}`}
-                            {player.dateofbirth && ` • ${formatDate(player.dateofbirth)}`}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="player-cell">{player.schoolname || "-"}</div>
-                      <div className="player-cell">{player.contactnumber || "-"}</div>
-                      <div className="player-cell">{player.email || "-"}</div>
-                      <div className="player-cell">
-                        {player.guardianname ? (
-                          <div>
-                            <div>{player.guardianname}</div>
-                            <div className="player-detail">{player.guardiancontact || "-"}</div>
-                          </div>
-                        ) : "-"}
-                      </div>
-                      <div className="player-cell actions-cell">
-                        <button className="view-btn">View Details</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-        </div>
-      </main>
-    </div>
-=======
         <div className="admin-header">
           <h1>SLSBA Admin Dashboard</h1>
           <div className="admin-actions">
@@ -493,33 +240,30 @@ const AdminApp = () => {
         </section>
 
         <div className="tabs-container">
-          <button 
-            className={`tab-button ${activeTab === 'programs' ? 'active' : ''}`} 
+          <div 
+            className={`tab ${activeTab === 'programs' ? 'active' : ''}`}
             onClick={() => setActiveTab('programs')}
           >
             Training Programs
-          </button>
-          <button 
-            className={`tab-button ${activeTab === 'players' ? 'active' : ''}`} 
+          </div>
+          <div 
+            className={`tab ${activeTab === 'players' ? 'active' : ''}`}
             onClick={() => setActiveTab('players')}
           >
             Player Enrollments
-          </button>
+          </div>
         </div>
 
         {activeTab === 'programs' && (
-          <div className="tab-content">
-            <div className="panel-header">
-              <h2>Existing Programs</h2>
-              <div className="counter">{programs.length} items</div>
-            </div>
+          <section className="existing-programs card-container">
+            <h2 className="section-title">Existing Programs</h2>
             {isLoading ? (
               <div className="loading-container">
                 <div className="loader"></div>
                 <p>Loading programs...</p>
               </div>
             ) : programs.length === 0 ? (
-              <div className="empty-state">
+              <div className="no-data">
                 <p>No training programs available.</p>
                 <p>Create your first program using the form above.</p>
               </div>
@@ -551,22 +295,19 @@ const AdminApp = () => {
                 ))}
               </div>
             )}
-          </div>
+          </section>
         )}
 
         {activeTab === 'players' && (
-          <div className="tab-content">
-            <div className="panel-header">
-              <h2>Player Enrollments</h2>
-              <div className="counter">{players.length} items</div>
-            </div>
+          <section className="player-enrollments card-container">
+            <h2 className="section-title">Player Enrollments</h2>
             {isLoading ? (
               <div className="loading-container">
                 <div className="loader"></div>
                 <p>Loading enrollments...</p>
               </div>
             ) : players.length === 0 ? (
-              <div className="empty-state">
+              <div className="no-data">
                 <p>No players enrolled yet.</p>
                 <p>Players will appear here once they enroll in a program.</p>
               </div>
@@ -611,11 +352,10 @@ const AdminApp = () => {
                 ))}
               </div>
             )}
-          </div>
+          </section>
         )}
       </div>
     </AdminSidebar>
->>>>>>> cf00e0e27bb95d12f1c8c467c72a0fc52dc1f5e1
   );
 };
 
