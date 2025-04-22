@@ -201,23 +201,23 @@ const AdminDashboard = ({ setIsAdminLoggedIn }) => {
           </div>
         </div>
 
-        {/* Bar Chart */}
-        <div className="dashboard-charts">
-          <div className="chart-container">
-            <h2>Monthly Income</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={stats.monthlyIncome}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="amount" fill="#3a7bd5" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Bar Chart */}
+          <div className="dashboard-charts">
+            <div className="chart-container">
+              <h2>Monthly Income</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={stats.monthlyIncome}>
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="amount" fill="#3a7bd5" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 export default AdminDashboard;
