@@ -750,24 +750,23 @@ const addNewPlayerField = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <td>{tournament.tournamentName}</td>
-                <td>{tournament.category}</td>
-                <td>{new Date(tournament.date).toLocaleDateString()}</td>
-                <td>{new Date(tournament.registrationDeadline).toLocaleDateString()}</td>
-                <td>{tournament.venue}</td>
-                <td>{tournament.maxParticipants}</td>
-                <td>{tournament.status}</td>
-                <td>{tournament.coordinator}</td>
-                <td>{tournament.contact}</td>
-                <td>{tournament.prizes}</td>
-                <td className="description-cell">
-                  {tournament.description?.length > 100
-                    ? tournament.description.slice(0, 100) + "..."
-                    : tournament.description}
-                </td>
-                <td>
-                  <div className="action-buttons-cell">
-                  
+                  <td>{tournament.tournamentName}</td>
+                  <td>{tournament.category}</td>
+                  <td>{new Date(tournament.date).toLocaleDateString()}</td>
+                  <td>{new Date(tournament.registrationDeadline).toLocaleDateString()}</td>
+                  <td>{tournament.venue}</td>
+                  <td>{tournament.maxParticipants}</td>
+                  <td>{tournament.status}</td>
+                  <td>{tournament.coordinator}</td>
+                  <td>{tournament.contact}</td>
+                  <td>{tournament.prizes}</td>
+                  <td className="description-cell">
+                    {tournament.description?.length > 100
+                      ? tournament.description.slice(0, 100) + "..."
+                      : tournament.description}
+                  </td>
+                  <td>
+                    <div className="action-buttons-cell">
                   <motion.button
                       className="table-action-btn report-btn"
                       whileHover={{ scale: 1.05 }}

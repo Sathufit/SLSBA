@@ -160,13 +160,13 @@ function AdminPanel() {
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>Subject</th>
-                      <th>Description</th>
-                      <th>Email</th>
-                      <th>Status</th>
-                      <th>Created At</th>
-                      <th>Reply</th>
-                      <th>Action</th>
+                        <th>Subject</th>
+                        <th>Description</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Reply</th>
+                        <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
