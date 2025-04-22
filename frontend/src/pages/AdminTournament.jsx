@@ -28,6 +28,12 @@ const AdminTournaments = () => {
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [expandedRow, setExpandedRow] = useState(null);
   const [showBracket, setShowBracket] = useState(null);
+
+  //report
+  const [showReport, setShowReport] = useState(null); // stores tournament ID
+  const [reportData, setReportData] = useState(null);
+  const [loadingReport, setLoadingReport] = useState(false);
+
   
   // State for data
   const [tournaments, setTournaments] = useState([]);
@@ -416,11 +422,27 @@ const handleSaveTournamentEdit = async () => {
       };
     });
   };
+  //report 
+  const fetchReport = async (tournamentId) => {
+    try {
+      setLoadingReport(true);
+      const res = await axios.get(`http://localhost:5001/api/tournaments/${tournamentId}/report`);
+      setReportData(res.data);
+      setShowReport(tournamentId);
+    } catch (error) {
+      console.error("❌ Error fetching report:", error);
+      showToast("❌ Failed to fetch report", "error");
+    } finally {
+      setLoadingReport(false);
+    }
+  };
+  
   // 🎯 Function to add a new player field
 const addNewPlayerField = () => {
   setEditedData((prevData) => ({
     ...prevData,
-    players: [...(prevData.players || []), { name: "", age: "" }] // Add new player field
+    players:
+     [...(prevData.players || []), { name: "", age: "" }] // Add new player field
   }));
   
 };
@@ -746,15 +768,14 @@ const addNewPlayerField = () => {
                 </td>
                 <td>
                   <div className="action-buttons-cell">
-                    <motion.button
-                      className="table-action-btn view-btn"
+                  <motion.button
+                      className="table-action-btn report-btn"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowBracket(tournament._id)}
+                      onClick={() => fetchReport(tournament._id)}
                     >
-                      View Bracket
+                      <FileText size={14} /> Report
                     </motion.button>
-
                     <motion.button
                       className="table-action-btn edit-btn"
                       whileHover={{ scale: 1.05 }}
