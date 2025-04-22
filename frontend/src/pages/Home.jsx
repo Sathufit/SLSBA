@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, MapPin, Phone, Mail, ChevronRight } from "lucide-react";
-import "../styles/global.css"; // Using the enhanced CSS
+import "../styles/global.css"; 
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -13,26 +13,25 @@ const Home = () => {
     setVisible(true);
   }, []);
 
-  const tournaments = [
-    {
-      category: "Under 17",
-      title: "National School Championship",
-      date: "March 15-20, 2025",
-      venue: "Sugathadasa Stadium, Colombo"
-    },
-    {
-      category: "Under 15",
-      title: "Provincial Tournament",
-      date: "April 5-8, 2025",
-      venue: "Royal College Sports Complex"
-    },
-    {
-      category: "Under 19",
-      title: "All Island School Games",
-      date: "May 1-6, 2025",
-      venue: "Kandy Sports Complex"
-    }
-  ];
+  const [tournaments, setTournaments] = useState([]);
+
+useEffect(() => {
+  setVisible(true);
+  fetchTournaments();
+}, []);
+
+
+const fetchTournaments = async () => {
+  try {
+    const res = await fetch("http://localhost:5001/api/tournaments/all"); // 👈 Use correct endpoint
+    if (!res.ok) throw new Error("Failed to fetch");
+    const data = await res.json();
+    setTournaments(data);
+  } catch (err) {
+    console.error("Failed to fetch tournaments", err);
+  }
+};
+
 
   // Animation classes
   const fadeInClass = visible ? "opacity-100" : "opacity-0";
@@ -94,26 +93,29 @@ const Home = () => {
         </div>
 
         <div className="tournaments-grid">
-          {tournaments.map((tournament, index) => (
-            <div key={index} className="tournament-card">
-              <span className="category">{tournament.category}</span>
-              <h3>{tournament.title}</h3>
-              <div className="tournament-info">
-                <Calendar size={16} />
-                <span>{tournament.date}</span>
-              </div>
-              <div className="tournament-info">
-                <MapPin size={16} />
-                <span>{tournament.venue}</span>
-              </div>
-              <button className="register-btn">
-                <Link to={`/tournamentReg/${tournament.id}`} className="register-btn">
-                Register Now <ChevronRight size={16} className="inline ml-1" />
-                </Link>
-              </button>
-            </div>
-          ))}
-        </div>
+            {tournaments
+              .filter(t => 
+                (category === "All Categories" || t.category === category) &&
+                (region === "All Regions" || t.venue?.toLowerCase().includes(region.toLowerCase()))
+              )
+              .map((tournament) => (
+                <div key={tournament._id} className="tournament-card">
+                  <span className="category">{tournament.category}</span>
+                  <h3>{tournament.tournamentName}</h3>
+                  <div className="tournament-info">
+                    <Calendar size={16} />
+                    <span>{new Date(tournament.date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="tournament-info">
+                    <MapPin size={16} />
+                    <span>{tournament.venue}</span>
+                  </div>
+                  <Link to={`/tournamentReg/${tournament._id}`} className="register-btn1">
+                  Register Now <ChevronRight size={16} className="inline ml-1" />
+                  </Link>
+                </div>
+            ))}
+          </div>
       </section>
 
       {/* Training Programs Section */}
@@ -129,9 +131,9 @@ const Home = () => {
                 <li>☑️ Footwork training</li>
                 <li>☑️ Equipment guidance</li>
               </ul>
-              <button className="register-btn">
-                Join Now <ChevronRight size={16} className="inline ml-1" />
-              </button>
+              <Link to={`/training`} className="register-btn1">
+                  Join Now <ChevronRight size={16} className="inline ml-1" />
+              </Link>
             </div>
           </div>
           <div className="training-card">
@@ -143,9 +145,9 @@ const Home = () => {
                 <li>☑️ Competition preparation</li>
                 <li>☑️ Physical conditioning</li>
               </ul>
-              <button className="register-btn">
-                Join Now <ChevronRight size={16} className="inline ml-1" />
-              </button>
+              <Link to={`/training`} className="register-btn1">
+                  Join Now <ChevronRight size={16} className="inline ml-1" />
+              </Link>
             </div>
           </div>
           <div className="training-card">
@@ -157,9 +159,9 @@ const Home = () => {
                 <li>☑️ Performance analysis</li>
                 <li>☑️ Tournament support</li>
               </ul>
-              <button className="register-btn">
-                Join Now <ChevronRight size={16} className="inline ml-1" />
-              </button>
+              <Link to={`/training`} className="register-btn1">
+                  Join Now <ChevronRight size={16} className="inline ml-1" />
+              </Link>
             </div>
           </div>
         </div>

@@ -11,6 +11,9 @@ import AboutUs from "./pages/AboutUs";
 import PaymentPage from "./pages/PaymentPage";
 import SuccessPage from "./pages/SuccessPage";
 import CancelPage from "./pages/CancelPage";
+import NewsDetail from "./components/NewsDetail";
+import MediaDetail from "./components/MediaDetail";
+
 
 // Admin-side pages
 import AdminDashboard from "./pages/AdminDashboard";
@@ -60,6 +63,9 @@ const App = () => {
       <Route path="/contact" element={<Support />} />
       <Route path="/training" element={<UserApp />} />
       <Route path="/news" element={<NewsFeed />} />
+      <Route path="/news/:id" element={<NewsDetail />} />
+      <Route path="/media/:id" element={<MediaDetail />} />
+
 
       {/* Admin Login */}
       <Route path="/admin/login" element={<AdminLogin />} />
