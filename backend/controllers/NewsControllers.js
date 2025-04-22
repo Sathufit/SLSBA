@@ -71,23 +71,25 @@ const getByIdNews = async (req, res, next) => {
 const updateNews = async (req, res, next) => {
   const id = req.params.id;
   const { title, content, category, author, publishedDate } = req.body;
+  const image = req.file ? req.file.filename : undefined;
+
+  let updatedData = {
+    title,
+    content,
+    category,
+    author,
+    publishedDate,
+  };
+
+  if (image) {
+    updatedData.image = image;
+  }
 
   let news;
-
   try {
-    news = await News.findByIdAndUpdate(
-      id,
-      {
-        title,
-        content,
-        category,
-        author,
-        publishedDate,
-      },
-      { new: true }
-    );
+    news = await News.findByIdAndUpdate(id, updatedData, { new: true });
   } catch (err) {
-    console.log("Error updating news:", err);
+    console.error("Error updating news:", err);
     return res.status(500).json({ message: "Server error" });
   }
 
@@ -97,6 +99,7 @@ const updateNews = async (req, res, next) => {
 
   return res.status(200).json({ news });
 };
+
 
 // Delete news
 const deleteNews = async (req, res, next) => {

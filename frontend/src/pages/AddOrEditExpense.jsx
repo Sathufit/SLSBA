@@ -88,7 +88,6 @@ const fetchAdminTournaments = async () => {
       const res = await axios.get(`http://localhost:5001/api/expenses/${id}`);
       const expenseData = res.data;
 
-      // Convert tournamentDate to "yyyy-MM-dd" for input type="date"
       const formattedDate = new Date(expenseData.tournamentDate)
         .toISOString()
         .split("T")[0];
