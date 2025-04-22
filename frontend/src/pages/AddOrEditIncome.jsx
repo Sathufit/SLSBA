@@ -25,6 +25,22 @@ const AddOrEditIncome = () => {
     }
   }, [id]);
 
+  const [adminTournaments, setAdminTournaments] = useState([]);
+
+useEffect(() => {
+  fetchAdminTournaments();
+}, []);
+
+const fetchAdminTournaments = async () => {
+  try {
+    const res = await axios.get("http://localhost:5001/api/tournaments/all");
+    setAdminTournaments(res.data);
+  } catch (error) {
+    console.error("Error fetching tournaments:", error);
+  }
+};
+
+
   const fetchIncomeDetails = async () => {
     setIsLoading(true);
     try {
@@ -167,22 +183,27 @@ const AddOrEditIncome = () => {
           </h2>
           <form onSubmit={handleSubmit} className="income-form">
             <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="tournamentName">Tournament Name</label>
-                <input 
-                  id="tournamentName"
-                  name="tournamentName" 
-                  value={form.tournamentName} 
-                  onChange={handleChange} 
-                  placeholder="Enter tournament name" 
-                  className={`form-input ${errors.tournamentName ? 'is-invalid' : ''}`}
-                  required 
-                />
-                {errors.tournamentName && (
-                  <div className="error-message">{errors.tournamentName}</div>
-                )}
-              </div>
-
+            <div className="form-group">
+              <label htmlFor="tournamentName">Tournament Name</label>
+              <select
+                id="tournamentName"
+                name="tournamentName"
+                value={form.tournamentName}
+                onChange={handleChange}
+                className={`form-input ${errors.tournamentName ? 'is-invalid' : ''}`}
+                required
+              >
+                <option value="">Select a tournament</option>
+                {adminTournaments.map((t) => (
+                  <option key={t._id} value={t.tournamentName}>
+                    {t.tournamentName}
+                  </option>
+                ))}
+              </select>
+              {errors.tournamentName && (
+                <div className="error-message">{errors.tournamentName}</div>
+              )}
+            </div>
               <div className="form-group">
                 <label htmlFor="tournamentDate">Tournament Date</label>
                 <input
