@@ -100,9 +100,9 @@ const AdminLayout = ({ children }) => {
                 <motion.div className="notification-panel">
                   <h3>Notifications</h3>
                   <ul>
-                    <li>New tournament registration</li>
-                    <li>Payment received from User #1234</li>
-                    <li>System update scheduled for tomorrow</li>
+                      <li>New tournament registration</li>
+                      <li>Payment received from User #1234</li>
+                      <li>System update scheduled for tomorrow</li>
                   </ul>
                   <button onClick={() => setNotifications(0)}>Mark all as read</button>
                 </motion.div>
