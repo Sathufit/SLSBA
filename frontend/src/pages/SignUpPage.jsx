@@ -1,12 +1,49 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "../styles/SignUpPage.css"; // ✅ Import CSS
-import { FaUser, FaEnvelope, FaLock, FaCalendarAlt, FaEye } from "react-icons/fa";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/SignUpPage.css";
+import { FaCalendarAlt, FaEye, FaEnvelope } from "react-icons/fa";
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    fullName: "",
+    schoolName: "",
+    contactNumber: "",
+    dob: "",
+    address: "",
+    role: "",
+    email: "",
+    password: ""
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Registration successful!");
+        navigate("/login");
+      } else {
+        alert(data.error || "Registration failed.");
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      alert("Something went wrong.");
+    }
+  };
+
   return (
     <div className="signup-container">
-      {/* Navigation Bar (Same as Other Pages) */}
       <header className="navbar">
         <nav>
           <div className="logo1">
@@ -27,80 +64,69 @@ const SignUpPage = () => {
         </nav>
       </header>
 
-      {/* Hero Image */}
       <div className="hero-image">
         <img src="/signup-hero.png" alt="Badminton Players" />
       </div>
 
-      {/* Sign Up Form */}
       <div className="signup-form-container">
         <div className="signup-form">
           <h2>Register Now</h2>
+
           <div className="form-group">
             <label>Full Name</label>
-            <input type="text" placeholder="Full Name" />
+            <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} />
           </div>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label>School Name</label>
-              <input type="text" placeholder="School Name" />
-            </div>
+
+          <div className="form-group">
+            <label>School Name</label>
+            <input type="text" name="schoolName" placeholder="School Name" value={formData.schoolName} onChange={handleChange} />
           </div>
-          
+
           <div className="form-row">
             <div className="form-group">
               <label>Contact Number</label>
-              <input type="text" placeholder="Contact Number" />
+              <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} />
             </div>
-            
             <div className="form-group">
               <label>Date of Birth</label>
               <div className="input-with-icon">
-                <input type="text" placeholder="mm/dd/yyyy" />
+                <input type="text" name="dob" placeholder="mm/dd/yyyy" value={formData.dob} onChange={handleChange} />
                 <FaCalendarAlt className="input-icon" />
               </div>
             </div>
           </div>
-          
+
           <div className="form-group">
             <label>Address</label>
-            <input type="text" placeholder="Address" />
+            <input type="text" name="address" placeholder="Address" value={formData.address} onChange={handleChange} />
           </div>
 
-          {/* User Role Selection */}
           <div className="form-group">
             <label>User Role</label>
             <div className="role-options">
-              <label className="role-option">
-                <input type="radio" name="role" value="player" />
-                <span className="role-icon">🏸</span> Player
-              </label>
-              <label className="role-option">
-                <input type="radio" name="role" value="coach" />
-                <span className="role-icon">👨‍🏫</span> Coach
-              </label>
-              <label className="role-option">
-                <input type="radio" name="role" value="parent" />
-                <span className="role-icon">👪</span> Parent
-              </label>
+              {["player", "coach", "parent"].map(role => (
+                <label key={role} className="role-option">
+                  <input type="radio" name="role" value={role} onChange={handleChange} checked={formData.role === role} />
+                  <span className="role-icon">{role === "player" ? "🏸" : role === "coach" ? "👨‍🏫" : "👪"}</span> {role.charAt(0).toUpperCase() + role.slice(1)}
+                </label>
+              ))}
             </div>
           </div>
-          
+
           <div className="form-group">
             <label>Email Address</label>
-            <input type="email" placeholder="Email Address" />
+            <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} />
           </div>
-          
+
           <div className="form-group">
             <label>Password</label>
             <div className="input-with-icon">
-              <input type="password" placeholder="Password" />
+              <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
               <FaEye className="input-icon" />
             </div>
           </div>
 
-          <button className="signup-btn">Sign Up</button>
+          <button className="signup-btn" onClick={handleSubmit}>Sign Up</button>
 
           <p className="login-text">
             Already have an account? <Link to="/login" className="login-link">Login here</Link>
@@ -108,7 +134,6 @@ const SignUpPage = () => {
         </div>
       </div>
 
-      {/* Footer (Same as Other Pages) */}
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-section">

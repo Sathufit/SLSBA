@@ -1,9 +1,24 @@
-// src/components/Navbar.jsx
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/global.css";
 
 const Navbar = () => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+    navigate("/login");
+  };
+
   return (
     <header className="navbar">
       <nav>
@@ -19,9 +34,21 @@ const Navbar = () => {
           <li><Link to="/news">News & Media</Link></li>
           <li><Link to="/contact">Contact Us</Link></li>
         </ul>
-        <Link to="/login">
-          <img src="/user-icon.webp" alt="User Icon" className="user-icon" />
-        </Link>
+
+        <div className="profile-section">
+          <img
+            src="/user-icon.webp"
+            alt="User Icon"
+            className="user-icon"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate(user ? "/profile" : "/login")}
+          />
+          {user && (
+            <button className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          )}
+        </div>
       </nav>
     </header>
   );

@@ -1,113 +1,172 @@
-import React from "react";
-import { Link } from "react-router-dom"; // ✅ Import Link
-import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
-import "../styles/LoginPage.css"; // ✅ Ensure the path is correct
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaEnvelope, FaLock, FaGoogle, FaFacebookF, FaArrowLeft, FaStar, FaTrophy } from "react-icons/fa";
+import "../styles/LoginPage.css";
 
 const LoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/");
+      } else {
+        alert(data.error || "Login failed");
+      }
+    } catch (err) {
+      console.error("Login Error:", err);
+      alert("An error occurred during login.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="home-container"> {/* ✅ Fixed class typo */}
-      {/* Navbar */}
-      <header className="navbar">
-        <nav>
-          <div className="logo1">
-            <img src="/logo.png" alt="SLSBA Logo" className="logo" />
-            <span className="logo-text">SLSBA</span>
-          </div>
-          <ul className="nav-links"> {/* ✅ Corrected <ul> structure */}
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/about">About Us</Link></li>
-            <li><Link to="/tournaments">Tournaments</Link></li>
-            <li><Link to="/training">Coaching Programs</Link></li>
-            <li><Link to="/news">News & Media</Link></li>
-            <li><Link to="/contact">Contact Us</Link></li>
-          </ul>
-          <Link to="/login">
-            <img src="/user-icon.webp" alt="User Icon" className="user-icon" />
-          </Link>
-        </nav>
-      </header>
-
-      {/* Login Section */}
-      <div className="login-container">
-      <div className="content">
-  <div className="image-section">
-    <img src="/badminton-player.png" alt="Badminton Player" />
-    <h2>Login to Your Account</h2>
-    <p>Manage your tournaments, registrations, and updates in one place.</p>
-  </div>
-
-  <div className="login-form">
-    <h3>Sign In</h3>
-    <div className="input-group">
-      <FaEnvelope className="icon" />
-      <input type="email" placeholder="Enter your email" />
-    </div>
-    <div className="input-group">
-      <FaLock className="icon" />
-      <input type="password" placeholder="Enter your password" />
-    </div>
-    <button className="login-btn">Login</button>
-
-    <div className="links">
-      <Link to="#">Forgot Password?</Link>
-      <Link to="/signup">Register Here</Link>
-    </div>
-
-    <p className="or-text">Or continue with</p>
-    <div className="social-login">
-      <button className="google-btn">Google</button>
-      <button className="facebook-btn">Facebook</button>
-    </div>
-    <p className="security-text">🔒 Your credentials are encrypted for security</p>
-  </div>
-</div>
-
+    <div className="login-page">
+      <div className="back-button-container">
+        <Link to="/" className="back-button">
+          <FaArrowLeft />
+          <span>Back to Home</span>
+        </Link>
       </div>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-section">
-            <div className="logo2">
-              <img src="/logo.png" alt="SLSBA Logo" />
-              <span>SLSBA</span>
+      
+      <div className="login-content">
+        <div className="login-card">
+          <div className="login-left">
+            <div className="logo-section">
+              <img src="/logo.png" alt="SLSBA Logo" className="login-logo" />
+              <h2 className="logo-text">SLSBA</h2>
             </div>
-            <p>Empowering the next generation of badminton champions in Sri Lanka.</p>
+            
+            <div className="animated-background">
+              <div className="animated-pattern">
+                <div className="star-icon">
+                  <FaStar />
+                </div>
+                <div className="trophy-icon">
+                  <FaTrophy />
+                </div>
+                <div className="circle-pattern c1"></div>
+                <div className="circle-pattern c2"></div>
+                <div className="circle-pattern c3"></div>
+                <div className="line-pattern l1"></div>
+                <div className="line-pattern l2"></div>
+              </div>
+            </div>
+            
+            <div className="left-content">
+              <h2 className="left-title">Empowering Sri Lanka's Badminton Champions</h2>
+              <p className="left-description">Access tournaments, coaching programs, and training resources all in one place.</p>
+              
+              <div className="feature-list">
+                <div className="feature-item">
+                  <div className="feature-icon"></div>
+                  <span>Tournament Registration</span>
+                </div>
+                <div className="feature-item">
+                  <div className="feature-icon"></div>
+                  <span>Coaching Resources</span>
+                </div>
+                <div className="feature-item">
+                  <div className="feature-icon"></div>
+                  <span>Player Development</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="footer-section">
-            <h3>Quick Links</h3>
-            <ul>
-              <li><Link to="/about">About Us</Link></li>
-              <li><Link to="/tournaments">Tournaments</Link></li>
-              <li><Link to="/programs">Training Programs</Link></li>
-              <li><Link to="/news">News & Media</Link></li>
-              <li><Link to="/contact">Contact Us</Link></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h3>Programs</h3>
-            <ul>
-              <li><Link to="#">Beginner's Program</Link></li>
-              <li><Link to="#">Advanced Training</Link></li>
-              <li><Link to="#">Elite Training</Link></li>
-              <li><Link to="#">School Programs</Link></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h3>Newsletter</h3>
-            <p>Subscribe to our newsletter for updates.</p>
-            <input type="email" placeholder="Your email address" />
-            <button className="subscribe-btn">Subscribe</button>
+          
+          <div className="login-right">
+            <div className="login-form-wrapper">
+              <h1 className="login-title">Welcome Back</h1>
+              <p className="login-subtitle">Sign in to your account</p>
+              
+              <form className="login-form" onSubmit={handleLogin}>
+                <div className="input-group">
+                  <label htmlFor="email">Email</label>
+                  <div className="input-field">
+                    <FaEnvelope className="field-icon" />
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="Your email address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="input-group">
+                  <label htmlFor="password">Password</label>
+                  <div className="input-field">
+                    <FaLock className="field-icon" />
+                    <input
+                      id="password"
+                      type="password"
+                      placeholder="Your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-options">
+                  <div className="remember-option">
+                    <input type="checkbox" id="remember" />
+                    <label htmlFor="remember">Remember me</label>
+                  </div>
+                  <Link to="/forgot-password" className="forgot-link">
+                    Forgot Password?
+                  </Link>
+                </div>
+                
+                <button 
+                  type="submit" 
+                  className="signin-button" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Signing in..." : "Sign In"}
+                </button>
+                
+                <div className="separator">
+                  <span>or continue with</span>
+                </div>
+                
+                <div className="social-signin">
+                  <button type="button" className="social-button google">
+                    <FaGoogle />
+                  </button>
+                  <button type="button" className="social-button facebook">
+                    <FaFacebookF />
+                  </button>
+                </div>
+                
+                <div className="signup-prompt">
+                  <span>Don't have an account?</span>
+                  <Link to="/signup" className="signup-link">Create Account</Link>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-        <div className="footer-bottom">
-          <p>© 2025 Sri Lanka Schools Badminton Association. All rights reserved.</p>
-          <div className="footer-links">
-            <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/terms">Terms of Service</Link>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 };

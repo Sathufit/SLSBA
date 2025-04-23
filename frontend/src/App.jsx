@@ -13,6 +13,7 @@ import SuccessPage from "./pages/SuccessPage";
 import CancelPage from "./pages/CancelPage";
 import NewsDetail from "./components/NewsDetail";
 import MediaDetail from "./components/MediaDetail";
+import Profile from "./pages/Profile";
 
 // Admin-side pages
 import AdminDashboard from "./pages/AdminDashboard";
@@ -58,6 +59,7 @@ const App = () => {
       <Route path="/news" element={<NewsFeed />} />
       <Route path="/news/:id" element={<NewsDetail />} />
       <Route path="/media/:id" element={<MediaDetail />} />
+      <Route path="/profile" element={<Profile />} />
 
       {/* Admin Login */}
       <Route path="/admin/login" element={<AdminLogin />} />
