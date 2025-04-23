@@ -45,12 +45,12 @@ const AdminDashboard = ({ setIsAdminLoggedIn }) => {
       day: "numeric",
     });
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminLoginTime");
-    setIsAdminLoggedIn(false);
-    navigate("/admin/login");
-  };
+    const handleLogout = () => {
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminLoginTime");
+      navigate("/admin/login", { replace: true }); // 🔁 replaces history, avoids back nav glitch
+    };
+    
 
   useEffect(() => {
     const fetchStats = async () => {

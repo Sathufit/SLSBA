@@ -66,13 +66,13 @@ const App = () => {
 
       {/* Admin Pages — NO REDIRECT from /admin */}
       <Route
-        path="/admin/dashboard"
-        element={
-          <ProtectedRoute isAdminLoggedIn={isAdminLoggedIn}>
-            <AdminDashboard setIsAdminLoggedIn={setIsAdminLoggedIn} />
-          </ProtectedRoute>
-        }
-      />
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
       <Route
         path="/admin/tournaments"
         element={

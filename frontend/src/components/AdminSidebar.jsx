@@ -29,8 +29,9 @@ const AdminLayout = ({ children }) => {
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminLoginTime");
-    navigate("/admin/login");
+    navigate("/admin/login", { replace: true }); // 🔁 replaces history, avoids back nav glitch
   };
+  
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);

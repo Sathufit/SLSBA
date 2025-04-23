@@ -149,9 +149,37 @@ const AboutUs = () => {
             <li><Link to="/news">News & Media</Link></li>
             <li><Link to="/contact">Contact Us</Link></li>
           </ul>
-          <Link to="/login">
-            <img src="/user-icon.webp" alt="User Icon" className="user-icon" />
-          </Link>
+          {/* ✅ Profile / Login logic */}
+          {localStorage.getItem("user") ? (
+                <div className="profile-section">
+                  <Link to="/profile">
+                    <img
+                      src="/user-icon.webp"
+                      alt="Profile"
+                      className="user-icon"
+                      style={{ cursor: "pointer" }}
+                    />
+                  </Link>
+                  <button
+                    onClick={() => {
+                      localStorage.clear();
+                      window.location.href = "/login";
+                    }}
+                    className="logout-btn"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link to="/login">
+                  <img
+                    src="/user-icon.webp"
+                    alt="Login"
+                    className="user-icon"
+                    style={{ cursor: "pointer" }}
+                  />
+                </Link>
+              )}
         </nav>
       </header>
 
