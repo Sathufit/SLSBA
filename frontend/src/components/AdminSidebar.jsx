@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, FileText, BookOpen, DollarSign,
-  Users, HelpCircle, Bell, Search, Menu,
-  BarChart2, TrendingUp, Calendar, LogOut, Settings
+  Users, Bell, Search, Menu, LogOut, Settings
 } from "lucide-react";
-import "../styles/AdminDashboard.css";
+import "../styles/AdminSidebar.css";
 
 const menuItems = [
   { name: "Dashboard", route: "/admin/dashboard", icon: <Home size={20} /> },
@@ -29,9 +28,8 @@ const AdminLayout = ({ children }) => {
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminLoginTime");
-    navigate("/admin/login", { replace: true }); // 🔁 replaces history, avoids back nav glitch
+    navigate("/admin/login", { replace: true });
   };
-  
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -46,7 +44,6 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="admin-container">
-      {/* Sidebar */}
       <motion.div
         className={`admin-sidebar ${isSidebarCollapsed ? "collapsed" : ""}`}
         initial={{ x: -300 }}
@@ -80,7 +77,6 @@ const AdminLayout = ({ children }) => {
         </div>
       </motion.div>
 
-      {/* Header */}
       <motion.div className="admin-header">
         <div className="header-left">
           <button className="menu-toggle" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}>
@@ -101,9 +97,9 @@ const AdminLayout = ({ children }) => {
                 <motion.div className="notification-panel">
                   <h3>Notifications</h3>
                   <ul>
-                      <li>New tournament registration</li>
-                      <li>Payment received from User #1234</li>
-                      <li>System update scheduled for tomorrow</li>
+                    <li>New tournament registration</li>
+                    <li>Payment received from User #1234</li>
+                    <li>System update scheduled for tomorrow</li>
                   </ul>
                   <button onClick={() => setNotifications(0)}>Mark all as read</button>
                 </motion.div>
@@ -117,7 +113,6 @@ const AdminLayout = ({ children }) => {
         </div>
       </motion.div>
 
-      {/* Content */}
       <div className={`admin-content ${isSidebarCollapsed ? "expanded" : ""}`}>
         {children}
       </div>

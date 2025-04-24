@@ -37,30 +37,36 @@ body {
   position: relative;
 }
 
-.admin-sidebar {
-  width: 260px;
+.admin-sidebar1 {
+  width: 200px;
   background-color: var(--bg);
   border-right: 1px solid var(--border);
   height: 100vh;
   position: fixed;
-  transition: width 0.3s ease;
+  top: 0;
+  left: 0;
+  transition: width 0.3s ease, transform 0.3s ease;
   z-index: 100;
   box-shadow: 0 0 20px var(--shadow);
 }
 
-.admin-sidebar.collapsed {
+
+.admin-sidebar1.collapsed {
   width: 70px;
 }
 
+
 .admin-content {
   flex: 1;
-  margin-left: 260px;
+  margin-left: 300px;
   transition: margin-left 0.3s ease;
-  padding: 20px;
-}
+  padding: 40px;
+  width: calc(100% - 260px); /* Add this to ensure proper width calculation */
+  position: relative;}
 
 .admin-content.expanded {
-  margin-left: 70px;
+  margin-left: 200px;
+  width: calc(100% - 70px); /* Add this for when sidebar is collapsed */
 }
 
 /* Sidebar */
@@ -197,6 +203,7 @@ body {
   align-items: center;
   margin-bottom: 20px;
   gap: 15px;
+  padding-left: 30px;
 }
 
 .page-title h1 {
@@ -342,6 +349,7 @@ body {
   border-collapse: separate;
   border-spacing: 0;
   min-width: 1200px; /* Ensure horizontal scroll on smaller screens */
+  padding-left: 20px;
 }
 
 /* Table Headers and Cells */

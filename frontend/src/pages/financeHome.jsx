@@ -142,14 +142,14 @@ const FinancialHome = () => {
           <h2 className="section-title">Financial Management</h2>
           <div className="action-buttons">
             <button 
-              className="submit-button" 
+              className="submit-button1" 
               onClick={() => navigate("/admin/finance/add-income")}
             >
               ➕ Add Income
             </button>
 
             <button 
-              className="submit-button secondary" 
+              className="submit-button1 secondary" 
               onClick={() => navigate("/admin/finance/add-expense")}
             >
               ➕ Add Expense

@@ -195,7 +195,7 @@ const AdminTournaments = () => {
     { name: "Dashboard", route: "/admin/dashboard", icon: <Home size={20} /> },
     { name: "Tournaments", route: "/admin/tournaments", icon: <Trophy size={20} /> },
     { name: "News & Media", route: "/admin/news", icon: <FileText size={20} /> },
-    { name: "Training Programs", route: "/admin/training", icon: <BookOpen size={20} /> },
+    { name: "Training Programs", route: "/admin/add-training", icon: <BookOpen size={20} /> },
     { name: "Finance & Payroll", route: "/admin/finance", icon: <DollarSign size={20} /> },
     { name: "Users", route: "/admin/users", icon: <Users size={20} /> },
     { name: "Support", route: "/admin/support", icon: <HelpCircle size={20} /> },
@@ -500,7 +500,7 @@ const addNewPlayerField = () => {
 
       {/* Sidebar */}
       <motion.div 
-        className={`admin-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}
+        className={`admin-sidebar1 ${isSidebarCollapsed ? 'collapsed' : ''}`}
         initial={{ x: -300 }}
         animate={{ x: 0, width: isSidebarCollapsed ? '80px' : '280px' }}
         transition={{ duration: 0.3 }}
@@ -803,7 +803,6 @@ const addNewPlayerField = () => {
   </div>
 )}
 
-              
               {/* Tournament Registrations View */}
 {activeView === 'registrations' && (
   <div className="tournaments-table-wrapper">
