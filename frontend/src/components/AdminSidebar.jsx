@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, FileText, BookOpen, DollarSign,
   Users, Bell, Search, Menu, LogOut, Settings
 } from "lucide-react";
 import "../styles/AdminSidebar.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const menuItems = [
   { name: "Dashboard", route: "/admin/dashboard", icon: <Home size={20} /> },
@@ -30,6 +30,9 @@ const AdminLayout = ({ children }) => {
     localStorage.removeItem("adminLoginTime");
     navigate("/admin/login", { replace: true });
   };
+
+  const location = useLocation();
+
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -57,11 +60,8 @@ const AdminLayout = ({ children }) => {
           {menuItems.map((item, i) => (
             <motion.li
               key={i}
-              className={activeTab === item.name ? "active" : ""}
-              onClick={() => {
-                setActiveTab(item.name);
-                navigate(item.route);
-              }}
+              className={location.pathname === item.route ? "active" : ""}
+              onClick={() => navigate(item.route)}
               whileHover={{ scale: 1.03, x: 3 }}
               whileTap={{ scale: 0.97 }}
             >
