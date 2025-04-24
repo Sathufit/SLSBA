@@ -227,52 +227,44 @@ const Tournaments = () => {
 
           {/* ➤ Tournament Details (Expanded) */}
           {expandedTournament === tournament._id && (
-            <div className="tournament-details">
-              <div className="details-grid">
-                <div className="detail-item">
-                  <h4>Description</h4>
-                  <p>
-                    {tournament.description ||
-                      "No detailed description provided for this tournament."}
-                  </p>
+              <div className="tournament-details">
+                <div className="details-grid">
+                  <div className="detail-item">
+                    <h4>Description</h4>
+                    <p>{tournament.description || "No description provided."}</p>
+                  </div>
+                  <div className="detail-item">
+                    <h4>Registration Deadline</h4>
+                    <p>
+                      {tournament.registrationDeadline
+                        ? new Date(tournament.registrationDeadline).toLocaleDateString()
+                        : "—"}
+                    </p>
+                  </div>
+                  <div className="detail-item">
+                    <h4>Coordinator</h4>
+                    <p>{tournament.coordinator || "—"}</p>
+                  </div>
+                  <div className="detail-item">
+                    <h4>Contact</h4>
+                    <p>{tournament.contact || "—"}</p>
+                  </div>
+                  <div className="detail-item">
+                    <h4>Prizes</h4>
+                    <p>{tournament.prizes || "—"}</p>
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <h4>Registration Deadline</h4>
-                  <p>
-                    {tournament.registrationDeadline
-                      ? new Date(tournament.registrationDeadline).toLocaleDateString()
-                      : "—"}
-                  </p>
-                </div>
-                <div className="detail-item">
-                  <h4>Coordinator</h4>
-                  <p>{tournament.coordinator || "—"}</p>
-                </div>
-                <div className="detail-item">
-                  <h4>Contact</h4>
-                  <p>{tournament.contact || "—"}</p>
-                </div>
-                <div className="detail-item">
-                  <h4>Prizes</h4>
-                  <p>{tournament.prizes || "—"}</p>
-                </div>
-              </div>
 
-              {/* ➤ Actions */}
-              <div className="details-actions">
-                <Link
-                  to={`/tournamentReg/${tournament._id}`}
-                  className="register-btn"
-                >
-                  Register Now{" "}
-                  <ChevronRight size={16} className="inline ml-1" />
-                </Link>
-                <button className="details-btn">
-                  Full Details <ChevronRight size={16} className="inline ml-1" />
-                </button>
+                <div className="details-actions">
+                  <Link to={`/tournamentReg/${tournament._id}`} className="register-btn1">
+                    Register Now <ChevronRight size={16} />
+                  </Link>
+                  <button className="details-btn">
+                    Full Details <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       ))
     ) : (
