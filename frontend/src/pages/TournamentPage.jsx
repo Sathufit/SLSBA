@@ -113,13 +113,12 @@ const Tournaments = () => {
       </header>
 
       {/* Page Banner */}
-      <section className="page-banner">
-        <div className="banner-content">
-          <h1>Tournaments</h1>
+      <section className="hero-section4">
+        <div className="hero-content4">
+          <h1>Tournament </h1>
           <p>Discover and register for upcoming badminton tournaments across Sri Lanka</p>
         </div>
       </section>
-
       {/* Filter Section */}
       <section className="filter-section">
         <div className="search-bar">

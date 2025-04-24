@@ -174,8 +174,8 @@ const TrainingPrograms = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <div className="hero-section">
-        <div className="hero-content">
+      <div className="hero-section2">
+        <div className="hero-content2">
           <h1 className="animate-fade-in">Training Programs</h1>
           <p className="animate-slide-up">Discover and register for upcoming badminton training programs across Sri Lanka</p>
         </div>

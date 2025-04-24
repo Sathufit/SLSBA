@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, MapPin, Phone, Mail, ChevronRight } from "lucide-react";
-import "../styles/global.css"; // Using the enhanced CSS
+import "../styles/global.css"; 
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -107,8 +107,8 @@ const Home = () => {
           </header>
           
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
+      <section className="hero-section1">
+        <div className="hero-content1">
           <h1>Welcome to Sri Lanka Schools Badminton Association</h1>
           <p>Empowering the next generation of champions</p>
         </div>

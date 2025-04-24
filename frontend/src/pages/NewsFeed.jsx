@@ -42,8 +42,8 @@ const NewsFeed = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <div className="hero-section">
-        <div className="hero-content">
+      <div className="hero-section5">
+        <div className="hero-content5">
           <h1>News & Media</h1>
           <p>Stay updated with the latest badminton news and event highlights across Sri Lanka</p>
         </div>

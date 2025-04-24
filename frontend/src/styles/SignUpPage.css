@@ -19,7 +19,7 @@
   /* Sidebar styles - same as login page */
   .signup-sidebar {
     flex: 1;
-    background-color: #2a4190;
+    background: linear-gradient(rgba(14, 1, 72, 0.6), rgba(9, 1, 28, 0.6));
     color: white;
     padding: 3rem 2rem;
     display: flex;

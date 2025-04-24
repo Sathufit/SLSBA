@@ -183,10 +183,10 @@ const AboutUs = () => {
         </nav>
       </header>
 
-      {/* Page Banner */}
-      <section className="page-banner about-banner">
-        <div className="banner-content">
-          <h1>About Us</h1>
+      {/* Hero Section */}
+      <section className="hero-section3">
+        <div className="hero-content3">
+          <h1>About Us </h1>
           <p>Empowering young badminton talent across Sri Lanka since 1985</p>
         </div>
       </section>

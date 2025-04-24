@@ -126,13 +126,12 @@ const SupportPage = () => {
   return (
     <div className="support-page">
       <Navbar />
-      <div className="page-banner">
-        <div className="container">
-          <h1>Contact Us</h1>
+      <section className="hero-section6">
+        <div className="hero-content6">
+          <h1>Contact Us </h1>
           <p>Get support or share your feedback with our team</p>
         </div>
-      </div>
-      
+      </section>
       <div className="support-container">
         <div className="support-column">
           {/* Support Ticket Section */}
