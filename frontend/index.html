@@ -1,21 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <title>SLSBA</title>
   </head>
   <body>
     <div id="root"></div>
 
-    <!-- ✅ Use development entry point — Vite will replace it during build -->
+    <!-- ✅ Vite replaces this with built JS file -->
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- ✅ Chatbase Chatbot -->
+    <!-- ✅ Chatbase chatbot -->
     <script>
-      (function(){
-        if(!window.chatbase || window.chatbase("getState") !== "initialized") {
+      (function () {
+        if (!window.chatbase || window.chatbase("getState") !== "initialized") {
           window.chatbase = (...arguments) => {
             if (!window.chatbase.q) window.chatbase.q = [];
             window.chatbase.q.push(arguments);
@@ -24,11 +24,11 @@
             get(target, prop) {
               if (prop === "q") return target.q;
               return (...args) => target(prop, ...args);
-            }
+            },
           });
         }
 
-        const onLoad = function() {
+        const onLoad = function () {
           const script = document.createElement("script");
           script.src = "https://www.chatbase.co/embed.min.js";
           script.id = "7rZZ2NtXlQdFIb-mGFCbm";
