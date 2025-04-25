@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: './', // ✅ Correct for static hosting like GitHub Pages
+  base: '/', // ✅ ensures assets always load from root (e.g., /assets/index-xxxx.js)
   plugins: [react()],
   define: {
     global: 'window',
@@ -11,5 +11,5 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  envPrefix: 'VITE_', // ✅ Explicitly define VITE_ prefix usage
+  envPrefix: 'VITE_', // optional, fine to keep
 });
