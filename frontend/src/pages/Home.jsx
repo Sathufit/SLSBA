@@ -111,6 +111,8 @@ const Home = () => {
       {/* Hero Section */}
       <section className="hero-section1">
         <div className="hero-content1">
+          <br></br>
+          <br></br>
           <h1>Welcome to Sri Lanka Schools Badminton Association</h1>
           <p>Empowering the next generation of champions</p>
         </div>
