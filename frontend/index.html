@@ -9,10 +9,10 @@
   <body>
     <div id="root"></div>
 
-    <!-- ✅ Load React app -->
+    <!-- ✅ Use development entry point — Vite will replace it during build -->
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- ✅ Chatbase AI Chatbot Embed -->
+    <!-- ✅ Chatbase Chatbot -->
     <script>
       (function(){
         if(!window.chatbase || window.chatbase("getState") !== "initialized") {
@@ -31,7 +31,7 @@
         const onLoad = function() {
           const script = document.createElement("script");
           script.src = "https://www.chatbase.co/embed.min.js";
-          script.id = "7rZZ2NtXlQdFIb-mGFCbm"; // ✅ YOUR bot ID
+          script.id = "7rZZ2NtXlQdFIb-mGFCbm";
           document.body.appendChild(script);
         };
 

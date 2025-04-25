@@ -43,17 +43,14 @@ app.get("/api/health", (req, res) => {
   res.send("✅ SLSBA API is running");
 });
 
-// 👉 Serve frontend in production
-if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../frontend/dist");
+const frontendPath = path.join(__dirname, "../frontend/dist");
 
-  app.use(express.static(frontendPath));
+app.use(express.static(frontendPath));
 
-  // 🛠️ Catch-all route for React Router
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-  });
-}
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
 
 // Connect to DB and start server
 const startServer = async () => {
