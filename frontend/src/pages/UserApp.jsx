@@ -3,6 +3,8 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import '../styles/UserApp.css';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const TrainingPrograms = () => {
   const [trainings, setTrainings] = useState([]);
@@ -30,7 +32,7 @@ const TrainingPrograms = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    axios.get("http://localhost:5001/api/training")
+    axios.get(`${BASE_URL}/api/training`)
       .then(res => {
         setTrainings(res.data);
         setFilteredTrainings(res.data);
@@ -120,7 +122,7 @@ const TrainingPrograms = () => {
       programid: registerFormData.selectedProgramId,
     };
 
-    axios.post("http://localhost:5001/api/players", playerData)
+    axios.post(`${BASE_URL}/api/players`, playerData)
       .then(() => {
         setSubmitStatus({
           show: true,

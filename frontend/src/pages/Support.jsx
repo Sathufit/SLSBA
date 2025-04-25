@@ -3,6 +3,8 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../styles/SupportPage.css';
 import axios from 'axios';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const SupportPage = () => {
   const [ticketForm, setTicketForm] = useState({
@@ -33,7 +35,7 @@ const SupportPage = () => {
   const fetchRecentFeedback = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('http://localhost:5001/api/feedback');
+      const response = await axios.get(`${BASE_URL}/api/feedback`);
       setRecentFeedback(response.data);
       setError(null);
     } catch (err) {
@@ -63,7 +65,7 @@ const SupportPage = () => {
   const handleTicketSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5001/api/tickets", ticketForm);
+      await axios.post(`${BASE_URL}/api/tickets`, ticketForm);
       setTicketSubmitted(true);
       setTimeout(() => setTicketSubmitted(false), 5000);
       setTicketForm({
@@ -81,7 +83,7 @@ const SupportPage = () => {
     e.preventDefault();
     try {
       // Submit feedback to the API
-      await axios.post('http://localhost:5001/api/feedback', feedbackForm);
+      await axios.post(`${BASE_URL}/api/feedback`, feedbackForm);
       setFeedbackSubmitted(true);
       setTimeout(() => setFeedbackSubmitted(false), 5000);
       setFeedbackForm({

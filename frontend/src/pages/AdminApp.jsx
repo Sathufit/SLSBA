@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AdminSidebar from "../components/AdminSidebar";
 import "../styles/AdminApp.css";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const AdminApp = () => {
   const [programs, setPrograms] = useState([]);
@@ -34,7 +36,7 @@ const AdminApp = () => {
 
   const fetchPrograms = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/training");
+      const res = await axios.get(`${BASE_URL}/api/training`);
       setPrograms(res.data);
       return res.data;
     } catch (err) {
@@ -45,7 +47,7 @@ const AdminApp = () => {
 
   const fetchPlayers = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/players");
+      const res = await axios.get(`${BASE_URL}/api/players`);
       setPlayers(res.data);
       return res.data;
     } catch (err) {
@@ -66,10 +68,10 @@ const AdminApp = () => {
 
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5001/api/training/${editingId}`, form);
+        await axios.put(`${BASE_URL}/api/training/${editingId}`, form);
         showNotification("Program updated successfully");
       } else {
-        await axios.post("http://localhost:5001/api/training", form);
+        await axios.post(`${BASE_URL}/api/training`, form);
         showNotification("Program created successfully");
       }
       resetForm();
@@ -95,7 +97,7 @@ const AdminApp = () => {
   const handleDelete = async (id) => {
     try {
       if (window.confirm("Are you sure you want to delete this program?")) {
-        await axios.delete(`http://localhost:5001/api/training/${id}`);
+        await axios.delete(`${BASE_URL}/api/training/${id}`);
         showNotification("Program deleted successfully");
         await fetchPrograms();
       }

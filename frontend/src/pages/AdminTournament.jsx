@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import "../styles/AdminTournament.css";
 import TournamentBracket from "./TournamentBracket";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 // Import icons from Lucide
 import { 
@@ -75,7 +77,7 @@ const AdminTournaments = () => {
   
     try {
       const response = await axios.put(
-        `http://localhost:5001/api/tournament-registrations/${editingRegistration._id}`, 
+        `${BASE_URL}/api/tournament-registrations/${editingRegistration._id}`, 
         editedData
       );
   
@@ -116,7 +118,7 @@ const AdminTournaments = () => {
     try {
       console.log("📌 Fetching tournaments...");
       setIsLoading(true);
-      const res = await axios.get("http://localhost:5001/api/tournaments/all");
+      const res = await axios.get(`${BASE_URL}/api/tournaments/all`);
       console.log("✅ API Response:", res.status, res.data); // Debugging
       setTournaments(res.data);
       setIsLoading(false);
@@ -131,7 +133,7 @@ const AdminTournaments = () => {
     try {
       console.log("📌 Fetching tournament registrations...");
       setIsLoading(true);
-      const res = await axios.get("http://localhost:5001/api/tournament-registrations/all");
+      const res = await axios.get(`${BASE_URL}/api/tournament-registrations/all`);
       console.log("✅ API Response:", res.status, res.data);
       setRegistrations(res.data);
     } catch (error) {
@@ -161,7 +163,7 @@ const AdminTournaments = () => {
   const fetchTournamentList = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5001/api/tournaments/all");  // ✅ FIXED
+      const res = await axios.get(`${BASE_URL}/api/tournaments/all`);
       setTournamentList(res.data);
       setLoading(false);
     } catch (error) {
@@ -239,10 +241,7 @@ const handleSaveTournamentEdit = async () => {
   }  
 
   try {
-    const res = await axios.put(
-      `http://localhost:5001/api/tournaments/update/${editingTournament}`,
-      editedData
-    );
+    const res = await axios.put(`${BASE_URL}/api/tournaments/update/${editingTournament}`, editedData);
     if (res.status === 200) {
       showToast("✅ Tournament updated successfully!");
       setEditingTournament(null);
@@ -265,8 +264,7 @@ const handleSaveTournamentEdit = async () => {
   
     if (window.confirm("Are you sure you want to delete this tournament?")) {
       try {
-        const response = await axios.delete(`http://localhost:5001/api/tournaments/${id}`);
-  
+        const response = await axios.delete(`${BASE_URL}/api/tournaments/${id}`);  
         if (response.status === 200) {
           showToast("✅ Tournament deleted successfully!");
           fetchTournaments(); // ✅ Refresh the list after deletion
@@ -357,7 +355,7 @@ const handleSaveTournamentEdit = async () => {
     }
   
     try {
-      const response = await axios.post("http://localhost:5001/api/tournaments/create", newTournament);
+      const response = await axios.post(`${BASE_URL}/api/tournaments/create`, newTournament);
   
       if (response.status === 201 || response.status === 200) {
         showToast("Tournament created successfully!");
@@ -396,7 +394,7 @@ const handleSaveTournamentEdit = async () => {
   
     if (window.confirm("Are you sure you want to delete this registration?")) {
       try {
-        const response = await axios.delete(`http://localhost:5001/api/tournament-registrations/${id}`);
+        const response = await axios.delete(`${BASE_URL}/api/tournament-registrations/${id}`);
   
         if (response.status === 200) {
           showToast("✅ Registration deleted successfully!");
@@ -427,7 +425,7 @@ const handleSaveTournamentEdit = async () => {
   const fetchReport = async (tournamentId) => {
     try {
       setLoadingReport(true);
-      const res = await axios.get(`http://localhost:5001/api/tournaments/${tournamentId}/report`);
+      const res = await axios.get(`${BASE_URL}/api/tournaments/${tournamentId}/report`);
       setReportData(res.data);
       setShowReport(tournamentId);
     } catch (error) {

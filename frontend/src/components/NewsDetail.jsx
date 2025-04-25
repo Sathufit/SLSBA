@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import "../styles/NewsDetail.css";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const NewsDetail = () => {
   const { id } = useParams();
@@ -13,7 +15,7 @@ const NewsDetail = () => {
   useEffect(() => {
     const fetchNewsDetail = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/news/${id}`);
+        const res = await axios.get(`${BASE_URL}/api/news/${id}`);
         setNewsItem(res.data.news);
       } catch (err) {
         console.error("Error fetching news detail:", err);
@@ -74,10 +76,7 @@ const NewsDetail = () => {
         
         {newsItem.image && (
           <div className="news-detail-image">
-            <img 
-              src={`http://localhost:5001/uploads/${newsItem.image}`} 
-              alt={newsItem.title} 
-            />
+            <img src={`${BASE_URL}/uploads/${newsItem.image}`} alt={newsItem.title} />
             {newsItem.imageCaption && (
               <p className="image-caption">{newsItem.imageCaption}</p>
             )}
@@ -132,7 +131,7 @@ const NewsDetail = () => {
               >
                 {article.thumbnail && (
                   <img 
-                    src={`http://localhost:5001/uploads/${article.thumbnail}`} 
+                    src={`${BASE_URL}/uploads/${article.thumbnail}`} 
                     alt={article.title} 
                   />
                 )}

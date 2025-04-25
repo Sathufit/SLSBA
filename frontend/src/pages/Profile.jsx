@@ -5,6 +5,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/Profile.css';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -48,7 +50,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token"); // or however you manage auth
   
-      const res = await fetch(`https://your-api-url.com/api/users/${user._id}`, {
+      const res = await fetch(`${BASE_URL}/api/users/${user._id}`, {
         method: "PUT", // or PATCH depending on your backend
         headers: {
           "Content-Type": "application/json",

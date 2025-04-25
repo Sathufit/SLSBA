@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import '../styles/AddOrEditExpense.css';
 import AdminSidebar from "../components/AdminSidebar";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const AddOrEditExpense = () => {
   const { id } = useParams();
@@ -29,7 +31,7 @@ const AddOrEditExpense = () => {
 
   const fetchAdminTournaments = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/tournaments/all");
+      const res = await axios.get(`${BASE_URL}/api/tournaments/all`);
       setAdminTournaments(res.data);
     } catch (error) {
       console.error("Error fetching tournaments:", error);
@@ -40,7 +42,7 @@ const AddOrEditExpense = () => {
   const fetchExpenseDetails = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5001/api/expenses/${id}`);
+      const res = await axios.get(`${BASE_URL}/api/expenses/${id}`);
       const expenseData = res.data;
 
       const formattedDate = new Date(expenseData.tournamentDate)
@@ -132,10 +134,10 @@ const AddOrEditExpense = () => {
 
     try {
       if (id) {
-        await axios.put(`http://localhost:5001/api/expenses/update/${id}`, data);
+        await axios.put(`${BASE_URL}/api/expenses/update/${id}`, data);
         showNotification("Expense updated successfully");
       } else {
-        await axios.post("http://localhost:5001/api/expenses/add", data);
+        await axios.post(`${BASE_URL}/api/expenses/add`, data);
         showNotification("Expense added successfully");
       }
       navigate("/admin/finance");

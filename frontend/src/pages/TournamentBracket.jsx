@@ -12,7 +12,7 @@ const TournamentBracket = ({ tournamentId }) => {
 
     const fetchBracket = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/tournaments/${tournamentId}/bracket`);
+        const res = await axios.get(`${BASE_URL}/api/tournaments/${tournamentId}/bracket`);
         if (res.data.bracket.length === 0) {
           setError("No bracket data available.");
         } else {

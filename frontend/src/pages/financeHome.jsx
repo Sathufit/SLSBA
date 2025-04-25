@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import '../styles/financialHome.css';
 import AdminSidebar from "../components/AdminSidebar";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const FinancialHome = () => {
   const [incomes, setIncomes] = useState([]);
@@ -28,7 +30,7 @@ const FinancialHome = () => {
 
   const fetchIncomes = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/incomes");
+      const res = await axios.get(`${BASE_URL}/api/incomes`);
       setIncomes(res.data);
       return res.data;
     } catch (err) {
@@ -39,7 +41,7 @@ const FinancialHome = () => {
 
   const fetchExpenses = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/expenses");
+      const res = await axios.get(`${BASE_URL}/api/expenses`);
       setExpenses(res.data);
       return res.data;
     } catch (err) {
@@ -59,8 +61,8 @@ const FinancialHome = () => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
     
     const url = type === "income"
-      ? `http://localhost:5001/api/incomes/delete/${id}`
-      : `http://localhost:5001/api/expenses/delete/${id}`;
+  ? `${BASE_URL}/api/incomes/delete/${id}`
+  : `${BASE_URL}/api/expenses/delete/${id}`;
     
     try {
       await axios.delete(url);

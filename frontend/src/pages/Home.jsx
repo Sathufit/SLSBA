@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Calendar, MapPin, Phone, Mail, ChevronRight } from "lucide-react";
 import "../styles/global.css"; 
 import { Link } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const Home = () => {
   const [category, setCategory] = useState("All Categories");
@@ -17,7 +19,7 @@ const Home = () => {
 
   const fetchTournaments = async () => {
     try {
-      const res = await fetch("http://localhost:5001/api/tournaments/all");
+      const res = await fetch(`${BASE_URL}/api/tournaments/all`);
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       setTournaments(data);

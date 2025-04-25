@@ -5,6 +5,8 @@ import { ChevronRight, Calendar, MapPin, Users, Filter, Clock } from "lucide-rea
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/NewsFeed.css";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const NewsFeed = () => {
   const [news, setNews] = useState([]);
@@ -16,9 +18,9 @@ const NewsFeed = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const newsResponse = await axios.get("http://localhost:5001/api/news");
-        const mediaResponse = await axios.get("http://localhost:5001/api/media");
-        
+        const newsResponse = await axios.get(`${BASE_URL}/api/news`);
+        const mediaResponse = await axios.get(`${BASE_URL}/api/media`);
+
         setNews(newsResponse.data.news);
         setMedia(mediaResponse.data.media);
         setLoading(false);
@@ -92,7 +94,7 @@ const NewsFeed = () => {
                       {item.image && (
                         <div className="news-image-container">
                           <img
-                            src={`http://localhost:5001/uploads/${item.image}`}
+                            src={`${BASE_URL}/uploads/${item.image}`}
                             alt={item.title}
                             className="news-image"
                           />
@@ -156,7 +158,7 @@ const NewsFeed = () => {
                       {item.images?.slice(0, 4).map((img, i) => (
                         <div key={i} className="media-image-container">
                           <img
-                            src={`http://localhost:5001/uploads/${img}`}
+                            src={`${BASE_URL}/uploads/${img}`}
                             alt={`${item.title} ${i + 1}`}
                             className="media-image"
                           />

@@ -12,6 +12,8 @@ import "../styles/global.css";
 import "../styles/TournamentPage.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const Tournaments = () => {
   const [category, setCategory] = useState("All Categories");
@@ -31,7 +33,7 @@ const Tournaments = () => {
   // Fetch tournaments from backend
   const fetchTournaments = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/tournaments/all");
+      const res = await axios.get(`${BASE_URL}/api/tournaments/all`);
       console.log("📌 User Page Tournaments:", res.data);
       setTournaments(res.data);
     } catch (error) {

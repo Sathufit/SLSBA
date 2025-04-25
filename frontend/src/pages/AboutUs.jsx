@@ -3,6 +3,7 @@ import { Users, Award, Target, Calendar, MapPin, Phone, Mail, ChevronRight } fro
 import { Link } from "react-router-dom";
 import "../styles/AboutPage.css";
 
+
 const AboutUs = () => {
   const [visible, setVisible] = useState(false);
 

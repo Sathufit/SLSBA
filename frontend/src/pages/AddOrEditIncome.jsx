@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import '../styles/AddOrEditIncome.css';
 import AdminSidebar from "../components/AdminSidebar";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const AddOrEditIncome = () => {
   const { id } = useParams();
@@ -30,7 +32,7 @@ const AddOrEditIncome = () => {
 
   const fetchAdminTournaments = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/tournaments/all");
+      const res = await axios.get(`${BASE_URL}/api/tournaments/all`);
       setAdminTournaments(res.data);
     } catch (error) {
       console.error("Error fetching tournaments:", error);
@@ -40,7 +42,7 @@ const AddOrEditIncome = () => {
   const fetchIncomeDetails = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5001/api/incomes/${id}`);
+      const res = await axios.get(`${BASE_URL}/api/incomes/${id}`);
       const incomeData = res.data;
   
       // Format date
@@ -133,10 +135,10 @@ const AddOrEditIncome = () => {
 
     try {
       if (id) {
-        await axios.put(`http://localhost:5001/api/incomes/update/${id}`, data);
+        await axios.put(`${BASE_URL}/api/incomes/update/${id}`, data);
         showNotification("Income updated successfully");
       } else {
-        await axios.post("http://localhost:5001/api/incomes/add", data);
+        await axios.post(`${BASE_URL}/api/incomes/add`, data);
         showNotification("Income added successfully");
       }
       navigate("/admin/finance");

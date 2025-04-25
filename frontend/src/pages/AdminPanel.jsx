@@ -3,6 +3,8 @@ import axios from 'axios';
 import '../styles/AdminPanel.css';
 import AdminSidebar from "../components/AdminSidebar";
 import { BsChat, BsTicket, BsTrash, BsSend, BsCheckCircle, BsClockHistory } from 'react-icons/bs';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 function AdminPanel() {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -17,7 +19,7 @@ function AdminPanel() {
 
   const fetchFeedbacks = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/feedback');
+      const res = await axios.get(`${BASE_URL}/api/feedback`);
       setFeedbacks(res.data);
     } catch (err) {
       console.error('Error fetching feedbacks:', err);
@@ -26,7 +28,7 @@ function AdminPanel() {
 
   const fetchTickets = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/tickets');
+      const res = await axios.get(`${BASE_URL}/api/tickets`);
       setTickets(res.data);
     } catch (err) {
       console.error('Error fetching tickets:', err);
@@ -39,7 +41,7 @@ function AdminPanel() {
 
   const sendReply = async (id) => {
     try {
-      await axios.post(`http://localhost:5001/api/tickets/reply/${id}`, {
+      await axios.post(`${BASE_URL}/api/tickets/reply/${id}`, {
         reply: reply[id],
       });
       alert('Reply sent and email delivered!');
@@ -53,7 +55,7 @@ function AdminPanel() {
   const deleteFeedback = async (id) => {
     if (window.confirm('Are you sure you want to delete this feedback?')) {
       try {
-        await axios.delete(`http://localhost:5001/api/feedback/${id}`);
+        await axios.delete(`${BASE_URL}/api/feedback/${id}`);
         setFeedbacks((prev) => prev.filter((f) => f._id !== id));
       } catch (err) {
         console.error('Error deleting feedback:', err);
@@ -64,7 +66,7 @@ function AdminPanel() {
   const deleteTicket = async (id) => {
     if (window.confirm('Are you sure you want to delete this ticket?')) {
       try {
-        await axios.delete(`http://localhost:5001/api/tickets/${id}`);
+        await axios.delete(`${BASE_URL}/api/tickets/${id}`);
         setTickets((prev) => prev.filter((t) => t._id !== id));
       } catch (err) {
         console.error('Error deleting ticket:', err);

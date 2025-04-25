@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import "../styles/MediaDetail.css";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const MediaDetail = () => {
   const { id } = useParams();
@@ -15,7 +16,7 @@ const MediaDetail = () => {
   useEffect(() => {
     const fetchGallery = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/media/${id}`);
+        const res = await axios.get(`${BASE_URL}/api/media/${id}`);
         setGallery(res.data);
         if (res.data.images && res.data.images.length > 0) {
           setSelectedImage(res.data.images[0]);
@@ -127,10 +128,10 @@ const MediaDetail = () => {
           </button>
           
           <div className="media-featured-image">
-            <img 
-              src={`http://localhost:5001/uploads/${selectedImage}`} 
-              alt={`${gallery.title} - Featured`} 
-            />
+          <img 
+            src={`${BASE_URL}/uploads/${selectedImage}`} 
+            alt={`${gallery.title} - Featured`} 
+          />
             <div className="media-counter">
               {currentIndex + 1} / {gallery.images.length}
             </div>
@@ -155,7 +156,7 @@ const MediaDetail = () => {
             onClick={() => handleImageClick(img, i)}
           >
             <img
-              src={`http://localhost:5001/uploads/${img}`}
+              src={`${BASE_URL}/uploads/${img}`}
               alt={`${gallery.title} thumbnail ${i + 1}`}
               loading="lazy"
             />
@@ -173,7 +174,7 @@ const MediaDetail = () => {
             onClick={() => handleImageClick(img, i)}
           >
             <img
-              src={`http://localhost:5001/uploads/${img}`}
+              src={`${BASE_URL}/uploads/${img}`}
               alt={`${gallery.title} ${i + 1}`}
               className="media-grid-image"
               loading="lazy"
@@ -188,9 +189,9 @@ const MediaDetail = () => {
         </Link>
         
         {gallery.downloadAll && (
-          <a href={`http://localhost:5001/api/media/${id}/download`} className="media-download-button">
-            <span className="media-download-icon">↓</span> Download All
-          </a>
+          <a href={`${BASE_URL}/api/media/${id}/download`} className="media-download-button">
+          <span className="media-download-icon">↓</span> Download All
+          </a>        
         )}
       </div>
     </div>

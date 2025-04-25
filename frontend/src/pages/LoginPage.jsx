@@ -10,6 +10,8 @@ import {
   FaTrophy
 } from "react-icons/fa";
 import "../styles/LoginPage.css";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const UserLogin = () => {
   const [email, setEmail] = useState("");
@@ -29,7 +31,7 @@ const UserLogin = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5001/api/auth/login", {
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

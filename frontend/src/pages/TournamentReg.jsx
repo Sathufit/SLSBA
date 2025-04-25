@@ -7,6 +7,8 @@ import axios from "axios";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import CheckoutForm from "../components/CheckoutForm"; 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const stripePromise = loadStripe("pk_test_51R4FPYGfn39KTTSncHeJ7cLe5Is4MOgn6NSvwq7jFN032wcB8w0nHgkyG7dOPk8HHl0aWk2Bpow27mOIFY2h5Fth00khlQqnSo");
 
@@ -32,7 +34,7 @@ const TournamentRegistration = () => {
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/api/tournaments/all");
+        const response = await axios.get(`${BASE_URL}/api/tournaments/all`);
         setTournaments(response.data);
       } catch (error) {
         console.error("❌ Error fetching tournaments:", error);
@@ -93,9 +95,9 @@ const TournamentRegistration = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:5001/api/tournament-registrations/register", submissionData, {
+      const response = await axios.post(`${BASE_URL}/api/tournament-registrations/register`, submissionData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });
+      });      
 
       alert("Registration successful!");
       setFormData({

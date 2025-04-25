@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaCalendarAlt, FaEye, FaEnvelope, FaGoogle, FaFacebookF } from "react-icons/fa";
 import "../styles/SignUpPage.css";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ const SignUpPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5001/api/auth/register", {
+      const res = await fetch(`${BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)

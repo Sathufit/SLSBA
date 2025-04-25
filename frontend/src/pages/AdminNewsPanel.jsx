@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import "../styles/AdminNewsPanel.css";
 import axios from "axios";
 import AdminSidebar from "../components/AdminSidebar";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 import {
   Calendar as CalendarIcon,
   Edit2 as EditIcon,
@@ -44,7 +46,7 @@ const AdminNewsPanel = () => {
 
   const fetchNews = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/news");
+      const res = await axios.get(`${BASE_URL}/api/news`);
       setNews(res.data.news || []);
     } catch (error) {
       console.error("Failed to fetch news:", error);
@@ -54,7 +56,7 @@ const AdminNewsPanel = () => {
 
   const fetchMedia = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/media");
+      const res = await axios.get(`${BASE_URL}/api/media`);
       setMediaList(res.data.media || []);
     } catch (error) {
       console.error("Failed to fetch media:", error);
@@ -92,10 +94,10 @@ const AdminNewsPanel = () => {
 
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5001/api/news/${editingId}`, data);
+        await axios.put(`${BASE_URL}/api/news/${editingId}`, data);
         showNotification("News updated successfully", "success");
       } else {
-        await axios.post("http://localhost:5001/api/news", data);
+        await axios.post(`${BASE_URL}/api/news`, data);
         showNotification("News added successfully", "success");
       }
 
@@ -132,7 +134,7 @@ const AdminNewsPanel = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this news article?")) return;
     try {
-      await axios.delete(`http://localhost:5001/api/news/${id}`);
+      await axios.delete(`${BASE_URL}/api/news/${id}`);
       fetchNews();
       showNotification("News deleted successfully", "success");
     } catch (err) {
@@ -155,7 +157,7 @@ const AdminNewsPanel = () => {
   const handleMediaDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this media item?")) return;
     try {
-      await axios.delete(`http://localhost:5001/api/media/${id}`);
+      await axios.delete(`${BASE_URL}/api/media/${id}`);
       fetchMedia();
       showNotification("Media deleted successfully", "success");
     } catch (err) {
@@ -173,10 +175,10 @@ const AdminNewsPanel = () => {
 
     try {
       if (editingMediaId) {
-        await axios.put(`http://localhost:5001/api/media/${editingMediaId}`, data);
+        await axios.put(`${BASE_URL}/api/media/${editingMediaId}`, data);
         showNotification("Media updated successfully", "success");
       } else {
-        await axios.post("http://localhost:5001/api/media", data);
+        await axios.post(`${BASE_URL}/api/media`, data);
         showNotification("Media uploaded successfully", "success");
       }
       setMediaForm({ title: "", description: "", images: [] });
@@ -491,7 +493,7 @@ const AdminNewsPanel = () => {
                       {Array.isArray(item.images) && item.images.length > 0 ? (
                         <div className="media-thumbnails">
                           <img 
-                            src={`http://localhost:5001/uploads/${item.images[0]}`} 
+                            src={`${BASE_URL}/uploads/${item.images[0]}`} 
                             alt={`${item.title} - primary`} 
                             className="primary-thumbnail"
                           />
