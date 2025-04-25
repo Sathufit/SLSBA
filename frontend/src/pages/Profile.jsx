@@ -44,12 +44,31 @@ const Profile = () => {
     setIsEditing(!isEditing);
   };
 
-  const handleSave = () => {
-    // Save updated user info to localStorage
-    localStorage.setItem("user", JSON.stringify(formData));
-    setUser(formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token"); // or however you manage auth
+  
+      const res = await fetch(`https://your-api-url.com/api/users/${user._id}`, {
+        method: "PUT", // or PATCH depending on your backend
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // if required
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (!res.ok) throw new Error("Failed to update user");
+  
+      const updatedUser = await res.json();
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
+  
 
   if (!user) return null;
 
