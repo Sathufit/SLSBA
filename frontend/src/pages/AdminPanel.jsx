@@ -41,16 +41,17 @@ function AdminPanel() {
 
   const sendReply = async (id) => {
     try {
-      await axios.post(`${BASE_URL}/api/tickets/reply/${id}`, {
-        reply: reply[id],
+      const res = await axios.post(`${BASE_URL}/api/tickets/reply/${id}`, {
+        reply: reply[id], // Change 'reply' key name if backend expects different key
       });
+      console.log('Reply sent:', res.data);
       alert('Reply sent and email delivered!');
-      fetchTickets();
+      fetchTickets(); // Refresh tickets after reply
     } catch (err) {
-      console.error('Error sending reply:', err);
+      console.error('Error sending reply:', err.response?.data || err.message);
       alert('Failed to send reply. Check server log or email config.');
     }
-  };
+  };  
 
   const deleteFeedback = async (id) => {
     if (window.confirm('Are you sure you want to delete this feedback?')) {
