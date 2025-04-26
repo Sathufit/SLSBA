@@ -23,7 +23,9 @@ const addPlayer = async (req, res) => {
     guardianname,
     guardiancontact,
     programid,
+    programname, // ✅ Add this
   } = req.body;
+  
 
   try {
     const existingPlayer = await Player.findOne({ email });
@@ -42,7 +44,9 @@ const addPlayer = async (req, res) => {
       guardianname,
       guardiancontact,
       programid,
+      programname, // ✅ Save this to DB
     });
+    
 
     const savedPlayer = await newPlayer.save();
     return res.status(200).json(savedPlayer);

@@ -260,7 +260,6 @@
 .primary-button {
   background-color: var(--primary-color);
   color: white;
-  color: #002c5a;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   text-decoration: none;

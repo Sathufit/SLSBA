@@ -81,42 +81,44 @@ const SupportPage = () => {
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
+  
+    // Validate
+    if (!feedbackForm.name.trim() || !feedbackForm.email.trim() || !feedbackForm.feedback.trim()) {
+      alert('Please fill out all fields before submitting.');
+      return;
+    }
+  
     try {
-      // Submit feedback to the API
-      await axios.post(`${BASE_URL}/api/feedback`, feedbackForm);
+      const payload = {
+        name: feedbackForm.name,
+        email: feedbackForm.email,
+        message: feedbackForm.feedback,  // ❗ map "feedback" input to "message" for backend
+      };
+  
+      await axios.post(`${BASE_URL}/api/feedback`, payload);
+  
       setFeedbackSubmitted(true);
       setTimeout(() => setFeedbackSubmitted(false), 5000);
+  
       setFeedbackForm({
         name: '',
         email: '',
         feedback: '',
         rating: 5,
-        contact: false
+        contact: false,
       });
-      // Refresh the recent feedback list
-      fetchRecentFeedback();
+  
+      fetchRecentFeedback(); // refresh recent feedbacks
     } catch (error) {
-      console.error('Feedback submission error:', error);
+      console.error('Feedback submission error:', error.response?.data || error.message);
       alert('Failed to submit feedback. Please try again.');
     }
   };
+  
 
   // Helper function to get user initials
   const getUserInitial = (name) => {
     return name ? name.charAt(0).toUpperCase() : '?';
-  };
-
-  // Helper function to render star rating
-  const renderStarRating = (rating) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span key={i}>
-          {i <= rating ? '★' : '☆'}
-        </span>
-      );
-    }
-    return stars;
   };
 
   // Format date to a readable format

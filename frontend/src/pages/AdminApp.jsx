@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { 
+  BsCalendarCheck, BsPersonBadge, BsGeoAlt, BsClock, 
+  BsTrash, BsPencil, BsArrowClockwise, BsExclamationCircle,
+  BsBoxArrowInRight, BsPeopleFill, BsPlus, BsCalendar
+} from "react-icons/bs";
 import AdminSidebar from "../components/AdminSidebar";
 import "../styles/AdminApp.css";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
-const AdminApp = () => {
+function TrainingProgram() {
   const [programs, setPrograms] = useState([]);
   const [players, setPlayers] = useState([]);
   const [form, setForm] = useState({
@@ -13,11 +18,16 @@ const AdminApp = () => {
     trainingtype: "",
     time: "",
     location: "",
+    description: "",
+    capacity: "",
+    startDate: "",
+    endDate: ""
   });
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("programs");
-  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sendingRequest, setSendingRequest] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -25,23 +35,17 @@ const AdminApp = () => {
 
   const fetchData = async () => {
     setIsLoading(true);
-    try {
-      await Promise.all([fetchPrograms(), fetchPlayers()]);
-    } catch (error) {
-      showNotification("Failed to load data", "error");
-    } finally {
-      setIsLoading(false);
-    }
+    await Promise.all([fetchPrograms(), fetchPlayers()]);
+    setIsLoading(false);
   };
 
   const fetchPrograms = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/training`);
       setPrograms(res.data);
-      return res.data;
     } catch (err) {
-      console.error("Error fetching programs:", err);
-      throw err;
+      console.error('Error fetching programs:', err);
+      showNotification('Failed to load programs', 'error');
     }
   };
 
@@ -49,316 +53,575 @@ const AdminApp = () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/players`);
       setPlayers(res.data);
-      return res.data;
     } catch (err) {
-      console.error("Error fetching players:", err);
-      throw err;
+      console.error('Error fetching players:', err);
+      showNotification('Failed to load players', 'error');
     }
   };
 
-  const showNotification = (message, type = "success") => {
-    setNotification({ show: true, message, type });
-    setTimeout(() => {
-      setNotification({ show: false, message: "", type: "" });
-    }, 3000);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
+    if (!form.programname || !form.trainingtype || !form.time || !form.location) {
+      showNotification('Please fill in all required fields', 'error');
+      return;
+    }
+    
     try {
+      setSendingRequest(true);
       if (editingId) {
         await axios.put(`${BASE_URL}/api/training/${editingId}`, form);
-        showNotification("Program updated successfully");
+        showNotification('Program updated successfully', 'success');
       } else {
         await axios.post(`${BASE_URL}/api/training`, form);
-        showNotification("Program created successfully");
+        showNotification('Program created successfully', 'success');
       }
       resetForm();
-      await fetchPrograms();
+      fetchPrograms();
     } catch (err) {
-      console.error("Operation failed:", err);
-      showNotification("Operation failed. Please try again.", "error");
+      console.error('Operation failed:', err);
+      showNotification('Operation failed. Please try again.', 'error');
+    } finally {
+      setSendingRequest(false);
     }
   };
 
   const handleEdit = (program) => {
     setForm({
-      programname: program.programname,
-      trainingtype: program.trainingtype,
-      time: program.time,
-      location: program.location,
+      programname: program.programname || "",
+      trainingtype: program.trainingtype || "",
+      time: program.time || "",
+      location: program.location || "",
+      description: program.description || "",
+      capacity: program.capacity || "",
+      startDate: program.startDate || "",
+      endDate: program.endDate || ""
     });
     setEditingId(program._id);
+    
     // Scroll to form
-    document.querySelector(".training-program-section").scrollIntoView({ behavior: "smooth" });
+    const formElement = document.querySelector(".program-form-section");
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   const handleDelete = async (id) => {
-    try {
-      if (window.confirm("Are you sure you want to delete this program?")) {
+    if (window.confirm('Are you sure you want to delete this program?')) {
+      try {
         await axios.delete(`${BASE_URL}/api/training/${id}`);
-        showNotification("Program deleted successfully");
-        await fetchPrograms();
+        setPrograms(prev => prev.filter((p) => p._id !== id));
+        showNotification('Program deleted successfully', 'success');
+      } catch (err) {
+        console.error('Error deleting program:', err);
+        showNotification('Failed to delete program', 'error');
       }
-    } catch (err) {
-      console.error("Failed to delete program:", err);
-      showNotification("Failed to delete program", "error");
     }
   };
 
   const resetForm = () => {
-    setForm({ programname: "", trainingtype: "", time: "", location: "" });
+    setForm({
+      programname: "",
+      trainingtype: "",
+      time: "",
+      location: "",
+      description: "",
+      capacity: "",
+      startDate: "",
+      endDate: ""
+    });
     setEditingId(null);
   };
 
-  // Function to format date strings
+  const showNotification = (message, type) => {
+    // Simple notification implementation
+    const notificationDiv = document.createElement('div');
+    notificationDiv.className = `notification ${type}`;
+    notificationDiv.innerHTML = message;
+    document.body.appendChild(notificationDiv);
+    
+    setTimeout(() => {
+      notificationDiv.classList.add('show');
+      setTimeout(() => {
+        notificationDiv.classList.remove('show');
+        setTimeout(() => document.body.removeChild(notificationDiv), 300);
+      }, 3000);
+    }, 100);
+  };
+
+  // Format date for display
   const formatDate = (dateString) => {
+    if (!dateString) return "-";
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  // Filter data based on search term
+  const filteredPrograms = programs.filter(program => 
+    program.programname?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    program.trainingtype?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    program.location?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredPlayers = players.filter(player =>
+    player.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    player.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    player.schoolname?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const handleEditPlayer = (player) => {
+    alert(`Edit player: ${player.fullname}`);
+    // You can open a modal to edit player details here if you want later
+  };
+  
+  const handleDeletePlayer = async (playerId) => {
+    if (window.confirm("Are you sure you want to delete this player?")) {
+      try {
+        await axios.delete(`${BASE_URL}/api/players/${playerId}`);
+        fetchPlayers(); // ✅ Refresh player list after deleting
+        showNotification('Player deleted successfully', 'success');
+      } catch (err) {
+        console.error("Error deleting player:", err);
+        showNotification('Failed to delete player', 'error');
+      }
+    }
+  };
+  
+
+  // Calculate stats
+  const activePlayers = players.length;
+  const activePrograms = programs.length;
+  
+  // Get players by program type (for stats)
+  const playersByProgram = programs.reduce((acc, program) => {
+    const count = players.filter(player => 
+      player.program === program._id || player.programname === program.programname
+    ).length;
+    return { ...acc, [program.programname]: count };
+  }, {});
+
   return (
     <AdminSidebar>
-      <div className="content-wrapper">
-        {notification.show && (
-          <div className={`notification ${notification.type}`}>
-            {notification.message}
+      <div className="training-dashboard">
+        {/* Header */}
+        <div className="dashboard-header">
+          <div className="header-content">
+            <h1>Training Program Management</h1>
+            <p>Create and manage training programs and player enrollments</p>
           </div>
-        )}
-        
-        <div className="admin-header">
-          <h1>SLSBA Admin Dashboard</h1>
-          <div className="admin-actions">
+          <div className="header-actions">
             <div className="search-container">
-              <input type="text" placeholder="Search..." className="search-input" />
-              <button className="search-button">
-                <i className="search-icon"></i>
-              </button>
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
             </div>
-            <div className="admin-profile">
-              <span>Admin</span>
-              <div className="profile-avatar">A</div>
-            </div>
+            <button 
+              className="refresh-button" 
+              onClick={fetchData}
+              disabled={isLoading}
+            >
+              <BsArrowClockwise className={isLoading ? "spinner" : ""} />
+              <span>{isLoading ? "Loading..." : "Refresh"}</span>
+            </button>
           </div>
         </div>
 
-        <div className="admin-stats">
+        {/* Stats Cards */}
+        <div className="stats-container">
           <div className="stat-card">
-            <div className="stat-icon programs-icon"></div>
-            <div className="stat-content">
-              <h3>{programs.length}</h3>
-              <p>Active Programs</p>
+            <div className="stat-icon programs">
+              <BsCalendarCheck />
+            </div>
+            <div className="stat-details">
+              <span className="stat-value">{activePrograms}</span>
+              <span className="stat-label">Active Programs</span>
             </div>
           </div>
+          
           <div className="stat-card">
-            <div className="stat-icon players-icon"></div>
-            <div className="stat-content">
-              <h3>{players.length}</h3>
-              <p>Enrolled Players</p>
+            <div className="stat-icon players">
+              <BsPeopleFill />
+            </div>
+            <div className="stat-details">
+              <span className="stat-value">{activePlayers}</span>
+              <span className="stat-label">Enrolled Players</span>
             </div>
           </div>
+          
           <div className="stat-card">
-            <div className="stat-icon calendar-icon"></div>
-            <div className="stat-content">
-              <h3>{new Date().toLocaleDateString('en-US', { month: 'long' })}</h3>
-              <p>Current Month</p>
+            <div className="stat-icon location">
+              <BsGeoAlt />
+            </div>
+            <div className="stat-details">
+              <span className="stat-value">
+                {new Set(programs.map(p => p.location).filter(Boolean)).size}
+              </span>
+              <span className="stat-label">Training Locations</span>
+            </div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-icon calendar">
+              <BsCalendar />
+            </div>
+            <div className="stat-details">
+              <span className="stat-value">{new Date().toLocaleString('default', { month: 'long' })}</span>
+              <span className="stat-label">Current Month</span>
             </div>
           </div>
         </div>
-
-        <section className="training-program-section card-container">
-          <h2 className="section-title">
-            {editingId ? "Edit Training Program" : "Create New Training Program"}
-          </h2>
-          <form onSubmit={handleSubmit} className="training-form">
-            <div className="form-grid">
+        
+        {/* Program Form Section */}
+        <div className="program-form-section panel-card">
+          <div className="panel-header">
+            <h2>{editingId ? <><BsPencil /> Edit Program</> : <><BsPlus /> Create New Program</>}</h2>
+          </div>
+          <form onSubmit={handleSubmit} className="program-form">
+            <div className="form-row">
               <div className="form-group">
-                <label htmlFor="programname">Program Name</label>
+                <label htmlFor="programname">Program Name *</label>
                 <input
+                  type="text"
                   id="programname"
                   name="programname"
-                  placeholder="Enter program name"
                   value={form.programname}
-                  onChange={(e) =>
-                    setForm({ ...form, programname: e.target.value })
-                  }
+                  onChange={handleInputChange}
+                  placeholder="Enter program name"
                   required
-                  className="form-input"
                 />
               </div>
+              
               <div className="form-group">
-                <label htmlFor="trainingtype">Training Type</label>
+                <label htmlFor="trainingtype">Training Type *</label>
                 <input
+                  type="text"
                   id="trainingtype"
                   name="trainingtype"
-                  placeholder="Enter training type"
                   value={form.trainingtype}
-                  onChange={(e) =>
-                    setForm({ ...form, trainingtype: e.target.value })
-                  }
+                  onChange={handleInputChange}
+                  placeholder="Enter training type"
                   required
-                  className="form-input"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="time">Time</label>
-                <input
-                  id="time"
-                  name="time"
-                  placeholder="Enter schedule time"
-                  value={form.time}
-                  onChange={(e) => setForm({ ...form, time: e.target.value })}
-                  required
-                  className="form-input"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="location">Location</label>
-                <input
-                  id="location"
-                  name="location"
-                  placeholder="Enter location"
-                  value={form.location}
-                  onChange={(e) =>
-                    setForm({ ...form, location: e.target.value })
-                  }
-                  required
-                  className="form-input"
                 />
               </div>
             </div>
-            <div className="form-buttons">
-              <button type="submit" className="submit-button">
-                {editingId ? "Update Program" : "Add Program"}
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="time">Schedule Time *</label>
+                <input
+                  type="text"
+                  id="time"
+                  name="time"
+                  value={form.time}
+                  onChange={handleInputChange}
+                  placeholder="E.g. Mon, Wed 4:00-5:30 PM"
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="location">Location *</label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value={form.location}
+                  onChange={handleInputChange}
+                  placeholder="Enter training location"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="capacity">Capacity</label>
+                <input
+                  type="number"
+                  id="capacity"
+                  name="capacity"
+                  value={form.capacity}
+                  onChange={handleInputChange}
+                  placeholder="Maximum participants"
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="startDate">Start Date</label>
+                <input
+                  type="date"
+                  id="startDate"
+                  name="startDate"
+                  value={form.startDate}
+                  onChange={handleInputChange}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="endDate">End Date</label>
+                <input
+                  type="date"
+                  id="endDate"
+                  name="endDate"
+                  value={form.endDate}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            
+            <div className="form-row">
+              <div className="form-group full-width">
+                <label htmlFor="description">Description</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={form.description}
+                  onChange={handleInputChange}
+                  placeholder="Enter program description"
+                  rows="3"
+                ></textarea>
+              </div>
+            </div>
+            
+            <div className="form-actions">
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                disabled={sendingRequest}
+              >
+                {sendingRequest ? (
+                  <><div className="btn-spinner"></div> Saving...</>
+                ) : (
+                  editingId ? "Update Program" : "Create Program"
+                )}
               </button>
+              
               {editingId && (
-                <button type="button" className="cancel-button" onClick={resetForm}>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={resetForm}
+                >
                   Cancel
                 </button>
               )}
             </div>
           </form>
-        </section>
-
+        </div>
+        
+        {/* Tabs */}
         <div className="tabs-container">
-          <div 
-            className={`tab ${activeTab === 'programs' ? 'active' : ''}`}
+          <button
+            className={`tab-button ${activeTab === 'programs' ? 'active' : ''}`}
             onClick={() => setActiveTab('programs')}
           >
-            Training Programs
-          </div>
-          <div 
-            className={`tab ${activeTab === 'players' ? 'active' : ''}`}
+            <BsCalendarCheck /> Training Programs
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'players' ? 'active' : ''}`}
             onClick={() => setActiveTab('players')}
           >
-            Player Enrollments
-          </div>
+            <BsPersonBadge /> Player Enrollments
+          </button>
         </div>
 
+        {/* Programs Tab */}
         {activeTab === 'programs' && (
-          <section className="existing-programs card-container">
-            <h2 className="section-title">Existing Programs</h2>
+          <div className="panel-card">
+            <div className="panel-header">
+              <h2><BsCalendarCheck /> Training Programs</h2>
+              <div className="counter">{filteredPrograms.length} programs</div>
+            </div>
+            
             {isLoading ? (
-              <div className="loading-container">
+              <div className="loading-state">
                 <div className="loader"></div>
                 <p>Loading programs...</p>
               </div>
-            ) : programs.length === 0 ? (
-              <div className="no-data">
-                <p>No training programs available.</p>
-                <p>Create your first program using the form above.</p>
+            ) : filteredPrograms.length === 0 ? (
+              <div className="empty-state">
+                <BsExclamationCircle className="empty-icon" />
+                <p>No training programs found</p>
+                {searchTerm && (
+                  <p className="empty-subtext">Try adjusting your search criteria</p>
+                )}
               </div>
             ) : (
-              <div className="card-grid">
-                {programs.map((p) => (
-                  <div key={p._id} className="card program-card">
-                    <div className="card-badge">{p.trainingtype}</div>
-                    <h3>{p.programname}</h3>
-                    <div className="card-details">
+              <div className="programs-grid">
+                {filteredPrograms.map((program) => (
+                  <div key={program._id} className="program-card">
+                    <div className="program-badge">{program.trainingtype}</div>
+                    <h3 className="program-title">{program.programname}</h3>
+                    
+                    <div className="program-details">
                       <div className="detail-item">
-                        <span className="detail-icon time-icon"></span>
-                        <span className="detail-text">{p.time}</span>
+                        <BsClock className="detail-icon" />
+                        <span>{program.time || "Schedule not set"}</span>
                       </div>
                       <div className="detail-item">
-                        <span className="detail-icon location-icon"></span>
-                        <span className="detail-text">{p.location}</span>
+                        <BsGeoAlt className="detail-icon" />
+                        <span>{program.location || "Location not set"}</span>
                       </div>
+                      {program.capacity && (
+                        <div className="detail-item">
+                          <BsPeopleFill className="detail-icon" />
+                          <span>Capacity: {program.capacity}</span>
+                        </div>
+                      )}
+                      {program.startDate && program.endDate && (
+                        <div className="detail-item">
+                          <BsCalendar className="detail-icon" />
+                          <span>{formatDate(program.startDate)} - {formatDate(program.endDate)}</span>
+                        </div>
+                      )}
                     </div>
+                    
+                    {program.description && (
+                      <p className="program-description">{program.description}</p>
+                    )}
+                    
+                    <div className="enrollment-info">
+                      <span className="enrollment-count">
+                        <strong>{playersByProgram[program.programname] || 0}</strong> players enrolled
+                      </span>
+                    </div>
+                    
                     <div className="card-actions">
-                      <button className="edit-btn" onClick={() => handleEdit(p)}>
-                        Edit
+                      <button 
+                        onClick={() => handleEdit(program)} 
+                        className="btn btn-edit"
+                        title="Edit program"
+                      >
+                        <BsPencil /> Edit
                       </button>
-                      <button className="delete-btn" onClick={() => handleDelete(p._id)}>
-                        Delete
+                      <button 
+                        onClick={() => handleDelete(program._id)}
+                        className="btn btn-delete"
+                        title="Delete program"
+                      >
+                        <BsTrash /> Delete
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </section>
+          </div>
         )}
 
+        {/* Players Tab */}
         {activeTab === 'players' && (
-          <section className="player-enrollments card-container">
-            <h2 className="section-title">Player Enrollments</h2>
+          <div className="panel-card">
+            <div className="panel-header">
+              <h2><BsPersonBadge /> Player Enrollments</h2>
+              <div className="counter">{filteredPlayers.length} players</div>
+            </div>
+
             {isLoading ? (
-              <div className="loading-container">
+              <div className="loading-state">
                 <div className="loader"></div>
-                <p>Loading enrollments...</p>
+                <p>Loading player enrollments...</p>
               </div>
-            ) : players.length === 0 ? (
-              <div className="no-data">
-                <p>No players enrolled yet.</p>
-                <p>Players will appear here once they enroll in a program.</p>
+            ) : filteredPlayers.length === 0 ? (
+              <div className="empty-state">
+                <BsPersonBadge className="empty-icon" />
+                <p>No player enrollments found</p>
+                {searchTerm && (
+                  <p className="empty-subtext">Try adjusting your search criteria</p>
+                )}
               </div>
             ) : (
-              <div className="players-list">
-                <div className="player-table-header">
-                  <div className="header-cell">Player Name</div>
-                  <div className="header-cell">School</div>
-                  <div className="header-cell">Contact</div>
-                  <div className="header-cell">Email</div>
-                  <div className="header-cell">Guardian</div>
-                  <div className="header-cell">Actions</div>
-                </div>
-                
-                {players.map((player, index) => (
-                  <div key={index} className="player-row">
-                    <div className="player-cell name-cell">
-                      <div className="player-avatar">{player.fullname.charAt(0)}</div>
-                      <div>
-                        <div className="player-name">{player.fullname}</div>
-                        <div className="player-detail">
-                          {player.gender && `${player.gender.charAt(0).toUpperCase() + player.gender.slice(1)}`}
-                          {player.dateofbirth && ` • ${formatDate(player.dateofbirth)}`}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="player-cell">{player.schoolname || "-"}</div>
-                    <div className="player-cell">{player.contactnumber || "-"}</div>
-                    <div className="player-cell">{player.email || "-"}</div>
-                    <div className="player-cell">
-                      {player.guardianname ? (
-                        <div>
-                          <div>{player.guardianname}</div>
-                          <div className="player-detail">{player.guardiancontact || "-"}</div>
-                        </div>
-                      ) : "-"}
-                    </div>
-                    <div className="player-cell actions-cell">
-                      <button className="view-btn">View Details</button>
-                    </div>
-                  </div>
-                ))}
+              <div className="table-responsive">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Player Name</th>
+                      <th>School</th>
+                      <th>Contact</th>
+                      <th>Email</th>
+                      <th>Guardian</th>
+                      <th>Program</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredPlayers.map((player) => (
+                      <tr key={player._id}>
+                        <td className="player-cell">
+                          <div className="player-avatar">{player.fullname?.[0] || "?"}</div>
+                          <div className="player-info">
+                            <span className="player-name">{player.fullname || "Unknown"}</span>
+                            <span className="player-meta">
+                              {player.gender && `${player.gender}`}
+                              {player.dateofbirth && ` • ${formatDate(player.dateofbirth)}`}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="school-cell">
+                          {player.schoolname || <em className="no-data">Not specified</em>}
+                        </td>
+                        <td>
+                          {player.contactnumber || <em className="no-data">No contact</em>}
+                        </td>
+                        <td className="email-cell">
+                          {player.email ? (
+                            <a href={`mailto:${player.email}`} className="email-link">
+                              {player.email}
+                            </a>
+                          ) : (
+                            <em className="no-data">No email</em>
+                          )}
+                        </td>
+                        <td>
+                          {player.guardianname ? (
+                            <div className="guardian-info">
+                              <div>{player.guardianname}</div>
+                              <div className="guardian-contact">
+                                {player.guardiancontact || <em className="no-data">No contact</em>}
+                              </div>
+                            </div>
+                          ) : (
+                            <em className="no-data">No guardian info</em>
+                          )}
+                        </td>
+                        <td>
+                          {player.programname || <em className="no-data">Not enrolled</em>}
+                        </td>
+                        <td className="action-cell">
+                          <button 
+                            className="btn btn-edit" 
+                            title="Edit Player"
+                            onClick={() => handleEditPlayer(player)}
+                          >
+                            <BsPencil /> Edit
+                          </button>
+                          <button 
+                            className="btn btn-delete"
+                            title="Delete Player"
+                            onClick={() => handleDeletePlayer(player._id)}
+                          >
+                            <BsTrash /> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
-          </section>
+          </div>
         )}
       </div>
     </AdminSidebar>
   );
-};
+}
 
-export default AdminApp;
+export default TrainingProgram;

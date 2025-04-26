@@ -16,7 +16,8 @@ const playerSchema = new mongoose.Schema({
   address: { type: String, required: true },
   guardianname: { type: String, required: true },
   guardiancontact: { type: String, required: true },
-  programid: { type: String }, // Optional for tracking which training
+  programid: { type: String }, // ✅ optional tracking
+  programname: { type: String }, // ✅ 🆕 ADD THIS LINE
 });
 
 const Player = mongoose.model("Player", playerSchema);

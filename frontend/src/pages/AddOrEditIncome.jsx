@@ -5,7 +5,6 @@ import '../styles/AddOrEditIncome.css';
 import AdminSidebar from "../components/AdminSidebar";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
 const AddOrEditIncome = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -45,18 +44,16 @@ const AddOrEditIncome = () => {
       const res = await axios.get(`${BASE_URL}/api/incomes/${id}`);
       const incomeData = res.data;
   
-      // Format date
-      const formattedDate = incomeData.incomeDate
-        ? new Date(incomeData.incomeDate).toISOString().split("T")[0]
+      const formattedDate = incomeData.tournamentDate
+        ? new Date(incomeData.tournamentDate).toISOString().split("T")[0]
         : "";
   
-      // Clean numeric fields from "$" if it accidentally exists
       const clean = (v) =>
         typeof v === "string" ? v.replace(/\$/g, "") : v;
   
       setForm({
-        ...incomeData,
-        incomeDate: formattedDate,
+        tournamentName: incomeData.tournamentName || "",
+        tournamentDate: formattedDate,
         entryFees: clean(incomeData.entryFees),
         ticketSales: clean(incomeData.ticketSales),
         sponsorships: clean(incomeData.sponsorships),
@@ -68,7 +65,7 @@ const AddOrEditIncome = () => {
       setIsLoading(false);
     }
   };
-
+  
   const showNotification = (message, type = "success") => {
     setNotification({ show: true, message, type });
     setTimeout(() => {
@@ -91,7 +88,7 @@ const AddOrEditIncome = () => {
     const numericFields = ['entryFees', 'ticketSales', 'sponsorships'];
     numericFields.forEach(field => {
       if (form[field] && parseFloat(form[field]) < 0) {
-        newErrors[field] = `${field.replace(/([A-Z])/g, ' $1')} must be non-negative`;
+        newErrors[field] = `${field.replace(/([A-Z])/g, ' $1').charAt(0).toUpperCase() + field.replace(/([A-Z])/g, ' $1').slice(1)} must be non-negative`;
       }
     });
 
@@ -160,14 +157,17 @@ const AddOrEditIncome = () => {
         )}
         
         <div className="admin-header">
-          <h1>SLSBA Admin Dashboard</h1>
+          <h1>Finance Management</h1>
           <div className="admin-actions">
             <div className="search-container">
               <input type="text" placeholder="Search..." className="search-input" />
               <button className="search-button">
-                <i className="search-icon"></i>
+                <i className="fas fa-search"></i>
               </button>
             </div>
+            <button className="refresh-button" onClick={() => window.location.reload()}>
+              <i className="fas fa-sync-alt"></i> Refresh
+            </button>
             <div className="admin-profile">
               <span>Admin</span>
               <div className="profile-avatar">A</div>
@@ -175,121 +175,156 @@ const AddOrEditIncome = () => {
           </div>
         </div>
 
-        <div className="add-edit-income-container card-container">
-          <h2 className="section-title">
-            {id ? "Edit Income" : "Add New Income"}
-          </h2>
-          <form onSubmit={handleSubmit} className="income-form">
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="tournamentName">Tournament Name</label>
-                <select
-                  id="tournamentName"
-                  name="tournamentName"
-                  value={form.tournamentName}
-                  onChange={handleChange}
-                  className={`form-input ${errors.tournamentName ? 'is-invalid' : ''}`}
-                  required
+        <div className="add-edit-income-container">
+          <div className="page-header">
+            <h2 className="section-title">
+              {id ? "Edit Income Record" : "Add New Income Record"}
+            </h2>
+            <button 
+              className="back-button"
+              onClick={() => navigate("/admin/finance")}
+            >
+              <i className="fas fa-arrow-left"></i> Back to Finance
+            </button>
+          </div>
+          
+          <div className="card-container">
+            <form onSubmit={handleSubmit} className="income-form">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label htmlFor="tournamentName">Tournament Name</label>
+                  <select
+                    id="tournamentName"
+                    name="tournamentName"
+                    value={form.tournamentName}
+                    onChange={handleChange}
+                    className={`form-input ${errors.tournamentName ? 'is-invalid' : ''}`}
+                    required
+                  >
+                    <option value="">Select a tournament</option>
+                    {adminTournaments.map((t) => (
+                      <option key={t._id} value={t.tournamentName}>
+                        {t.tournamentName}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.tournamentName && (
+                    <div className="error-message">{errors.tournamentName}</div>
+                  )}
+                </div>
+                <div className="form-group">
+                  <label htmlFor="tournamentDate">Tournament Date</label>
+                  <input
+                    id="tournamentDate"
+                    type="date"
+                    name="tournamentDate"
+                    value={form.tournamentDate}
+                    onChange={handleChange}
+                    className={`form-input ${errors.tournamentDate ? 'is-invalid' : ''}`}
+                    required
+                  />
+                  {errors.tournamentDate && (
+                    <div className="error-message">{errors.tournamentDate}</div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="entryFees">Entry Fees ($)</label>
+                  <div className="input-with-icon">
+                    <span className="currency-icon">$</span>
+                    <input 
+                      id="entryFees"
+                      type="number" 
+                      name="entryFees" 
+                      value={form.entryFees} 
+                      onChange={handleChange} 
+                      placeholder="0.00" 
+                      min="0"
+                      step="0.01"
+                      className={`form-input with-icon ${errors.entryFees ? 'is-invalid' : ''}`}
+                    />
+                  </div>
+                  {errors.entryFees && (
+                    <div className="error-message">{errors.entryFees}</div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="ticketSales">Ticket Sales ($)</label>
+                  <div className="input-with-icon">
+                    <span className="currency-icon">$</span>
+                    <input 
+                      id="ticketSales"
+                      type="number" 
+                      name="ticketSales" 
+                      value={form.ticketSales} 
+                      onChange={handleChange} 
+                      placeholder="0.00" 
+                      min="0"
+                      step="0.01"
+                      className={`form-input with-icon ${errors.ticketSales ? 'is-invalid' : ''}`}
+                    />
+                  </div>
+                  {errors.ticketSales && (
+                    <div className="error-message">{errors.ticketSales}</div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="sponsorships">Sponsorships ($)</label>
+                  <div className="input-with-icon">
+                    <span className="currency-icon">$</span>
+                    <input 
+                      id="sponsorships"
+                      type="number" 
+                      name="sponsorships" 
+                      value={form.sponsorships} 
+                      onChange={handleChange} 
+                      placeholder="0.00" 
+                      min="0"
+                      step="0.01"
+                      className={`form-input with-icon ${errors.sponsorships ? 'is-invalid' : ''}`}
+                    />
+                  </div>
+                  {errors.sponsorships && (
+                    <div className="error-message">{errors.sponsorships}</div>
+                  )}
+                </div>
+                
+                <div className="form-group total-income">
+                  <label>Total Income ($)</label>
+                  <div className="calculated-total">
+                    ${(
+                      parseFloat(form.entryFees || 0) +
+                      parseFloat(form.ticketSales || 0) +
+                      parseFloat(form.sponsorships || 0)
+                    ).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-buttons">
+                <button 
+                  type="submit" 
+                  className="submit-button"
+                  disabled={isLoading}
                 >
-                  <option value="">Select a tournament</option>
-                  {adminTournaments.map((t) => (
-                    <option key={t._id} value={t.tournamentName}>
-                      {t.tournamentName}
-                    </option>
-                  ))}
-                </select>
-                {errors.tournamentName && (
-                  <div className="error-message">{errors.tournamentName}</div>
-                )}
+                  {isLoading ? 
+                    <>
+                      <i className="fas fa-spinner fa-spin"></i> {id ? "Updating..." : "Saving..."}
+                    </> : 
+                    (id ? "Update Income Record" : "Add Income Record")}
+                </button>
+                <button 
+                  type="button" 
+                  className="cancel-button"
+                  onClick={() => navigate("/admin/finance")}
+                >
+                  Cancel
+                </button>
               </div>
-              <div className="form-group">
-                <label htmlFor="tournamentDate">Tournament Date</label>
-                <input
-                  id="tournamentDate"
-                  type="date"
-                  name="tournamentDate"
-                  value={form.tournamentDate}
-                  onChange={handleChange}
-                  className={`form-input ${errors.tournamentDate ? 'is-invalid' : ''}`}
-                  required
-                />
-                {errors.tournamentDate && (
-                  <div className="error-message">{errors.tournamentDate}</div>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="entryFees">Entry Fees</label>
-                <input 
-                  id="entryFees"
-                  type="number" 
-                  name="entryFees" 
-                  value={form.entryFees} 
-                  onChange={handleChange} 
-                  placeholder="Enter entry fees amount" 
-                  min="0"
-                  step="0.01"
-                  className={`form-input ${errors.entryFees ? 'is-invalid' : ''}`}
-                />
-                {errors.entryFees && (
-                  <div className="error-message">{errors.entryFees}</div>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="ticketSales">Ticket Sales</label>
-                <input 
-                  id="ticketSales"
-                  type="number" 
-                  name="ticketSales" 
-                  value={form.ticketSales} 
-                  onChange={handleChange} 
-                  placeholder="Enter ticket sales amount" 
-                  min="0"
-                  step="0.01"
-                  className={`form-input ${errors.ticketSales ? 'is-invalid' : ''}`}
-                />
-                {errors.ticketSales && (
-                  <div className="error-message">{errors.ticketSales}</div>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="sponsorships">Sponsorships</label>
-                <input 
-                  id="sponsorships"
-                  type="number" 
-                  name="sponsorships" 
-                  value={form.sponsorships} 
-                  onChange={handleChange} 
-                  placeholder="Enter sponsorship amount" 
-                  min="0"
-                  step="0.01"
-                  className={`form-input ${errors.sponsorships ? 'is-invalid' : ''}`}
-                />
-                {errors.sponsorships && (
-                  <div className="error-message">{errors.sponsorships}</div>
-                )}
-              </div>
-            </div>
-
-            <div className="form-buttons">
-              <button 
-                type="submit" 
-                className="submit-button"
-                disabled={isLoading}
-              >
-                {isLoading ? "Saving..." : (id ? "Update Income" : "Add Income")}
-              </button>
-              <button 
-                type="button" 
-                className="cancel-button"
-                onClick={() => navigate("/admin/finance")}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </AdminSidebar>

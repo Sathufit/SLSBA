@@ -3,8 +3,8 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import '../styles/UserApp.css';
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TrainingPrograms = () => {
   const [trainings, setTrainings] = useState([]);
@@ -68,25 +68,21 @@ const TrainingPrograms = () => {
   const filterTrainings = (query, category, location, level) => {
     let filtered = trainings;
 
-    // Filter by search query
     if (query) {
       filtered = filtered.filter(program => 
-        program.programname.toLowerCase().includes(query.toLowerCase()) ||
-        program.trainingtype.toLowerCase().includes(query.toLowerCase())
+        program.programname?.toLowerCase().includes(query.toLowerCase()) ||
+        program.trainingtype?.toLowerCase().includes(query.toLowerCase())
       );
     }
 
-    // Filter by category
     if (category && category !== "All Categories") {
       filtered = filtered.filter(program => program.trainingtype === category);
     }
 
-    // Filter by location
     if (location && location !== "All Locations") {
       filtered = filtered.filter(program => program.location === location);
     }
 
-    // Filter by level
     if (level && level !== "All Levels") {
       filtered = filtered.filter(program => program.level === level);
     }
@@ -96,19 +92,19 @@ const TrainingPrograms = () => {
 
   const openRegisterForm = (program) => {
     setSelectedProgram(program);
-    setRegisterFormData({
-      ...registerFormData,
+    setRegisterFormData(prev => ({
+      ...prev,
       selectedProgramId: program._id
-    });
+    }));
     setShowRegisterForm(true);
-    // Scroll to form
     setTimeout(() => {
-      document.getElementById('register-form').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('register-form')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
+  
     const playerData = {
       fullname: registerFormData.fullname,
       dateofbirth: registerFormData.dateofbirth,
@@ -120,15 +116,15 @@ const TrainingPrograms = () => {
       guardianname: registerFormData.guardianname,
       guardiancontact: registerFormData.guardiancontact,
       programid: registerFormData.selectedProgramId,
+      programname: selectedProgram?.programname,   // ✅ ADD THIS LINE
     };
-
+    
+  
+    console.log("🔎 Submitting playerData:", playerData);  // <--- ADD THIS
+  
     axios.post(`${BASE_URL}/api/players`, playerData)
       .then(() => {
-        setSubmitStatus({
-          show: true,
-          success: true,
-          message: "You've successfully registered for the training program!"
-        });
+        setSubmitStatus({ show: true, success: true, message: "You've successfully registered!" });
         setRegisterFormData({
           fullname: "",
           dateofbirth: "",
@@ -141,32 +137,27 @@ const TrainingPrograms = () => {
           guardiancontact: "",
           selectedProgramId: ""
         });
-        // Hide success message after 5 seconds
         setTimeout(() => {
           setSubmitStatus({ show: false, success: false, message: "" });
           setShowRegisterForm(false);
         }, 5000);
       })
       .catch((err) => {
-        console.error("❌ Registration failed", err);
-        setSubmitStatus({
-          show: true,
-          success: false,
-          message: "Something went wrong during registration. Please try again."
-        });
-        // Hide error message after 5 seconds
+        console.error("❌ Registration failed", err.response?.data || err.message);
+        setSubmitStatus({ show: true, success: false, message: "Something went wrong. Try again!" });
         setTimeout(() => {
           setSubmitStatus({ show: false, success: false, message: "" });
         }, 5000);
       });
   };
+  
 
-  // Get unique categories, locations, and levels for filters
   const categories = ["All Categories", ...new Set(trainings.map(program => program.trainingtype))];
   const locations = ["All Locations", ...new Set(trainings.map(program => program.location))];
   const levels = ["All Levels", "Beginner", "Intermediate", "Advanced"];
 
   const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
@@ -174,7 +165,7 @@ const TrainingPrograms = () => {
   return (
     <div className="training-programs-container">
       <Navbar />
-      
+
       {/* Hero Section */}
       <div className="hero-section2">
         <div className="hero-content2">
