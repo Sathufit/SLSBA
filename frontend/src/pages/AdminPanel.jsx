@@ -121,18 +121,18 @@ function AdminPanel() {
     }
   };
 
-  // Filter function for search
-  const filteredTickets = tickets.filter(ticket => 
+  const filteredTickets = (Array.isArray(tickets) ? tickets : []).filter(ticket => 
     ticket.subject?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     ticket.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     ticket.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const filteredFeedbacks = feedbacks.filter(feedback =>
+  
+  const filteredFeedbacks = (Array.isArray(feedbacks) ? feedbacks : []).filter(feedback =>
     feedback.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     feedback.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     feedback.message?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
 
   // Statistics
   const openTickets = tickets.filter(t => t.status !== 'Closed').length;
