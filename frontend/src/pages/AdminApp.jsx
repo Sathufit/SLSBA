@@ -28,6 +28,13 @@ function TrainingProgram() {
   const [activeTab, setActiveTab] = useState("programs");
   const [searchTerm, setSearchTerm] = useState('');
   const [sendingRequest, setSendingRequest] = useState(false);
+  const [programName, setProgramName] = useState('');
+  const [programList, setProgramList] = useState([]); // For the filter dropdown
+  const [location, setLocation] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+
 
   useEffect(() => {
     fetchData();
@@ -43,11 +50,13 @@ function TrainingProgram() {
     try {
       const res = await axios.get(`${BASE_URL}/api/training`);
       setPrograms(res.data);
+      setProgramList(res.data); // ✅ Add this line
     } catch (err) {
       console.error('Error fetching programs:', err);
       showNotification('Failed to load programs', 'error');
     }
   };
+  
 
   const fetchPlayers = async () => {
     try {
@@ -190,6 +199,85 @@ function TrainingProgram() {
       }
     }
   };
+  const handleGenerateTrainingReport = async () => {
+    setIsLoading(true);
+  
+    try {
+      // Validate date range if both dates are provided
+      if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (start > end) {
+          showToast("❌ Start date cannot be after end date", "error");
+          setIsLoading(false);
+          return;
+        }
+      }
+  
+      const filterData = {
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+        ...(location && { location }),
+        ...(programName && { programName }),
+      };
+  
+      showNotification("Generating report...", "info");
+  
+      const response = await axios.post(
+        `${BASE_URL}/api/training/report/pdf`,
+        filterData,
+        {
+          responseType: "blob",
+          timeout: 30000,
+          headers: { Accept: "application/pdf" },
+        }
+      );
+  
+      if (!response.data || response.data.size === 0) {
+        throw new Error("Generated PDF is empty");
+      }
+  
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const filename = `Training_Programs_Report_${new Date().toISOString().split("T")[0]}.pdf`;
+  
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+  
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+  
+      showToast("✅ Report generated successfully!", "success");
+    } catch (error) {
+      console.error("❌ Error generating report:", error);
+  
+      let errorMessage = "❌ Failed to generate report.";
+      if (error.response) {
+        switch (error.response.status) {
+          case 404:
+            errorMessage = "❌ No training programs found matching the filters.";
+            break;
+          case 400:
+            errorMessage = "❌ Invalid filter parameters.";
+            break;
+          case 500:
+            errorMessage = "❌ Server error while generating report.";
+            break;
+        }
+      } else if (error.code === "ECONNABORTED") {
+        errorMessage = "❌ Request timed out. Please try again.";
+      }
+  
+      showToast(errorMessage, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
 
   // Calculate stats
@@ -233,6 +321,71 @@ function TrainingProgram() {
             </button>
           </div>
         </div>
+        <div className="filter-form">
+  {/* Program Name Dropdown */}
+  <div className="filter-group">
+    <label htmlFor="programName">Program Name</label>
+    <select
+      id="programName"
+      value={programName}
+      onChange={(e) => setProgramName(e.target.value)}
+    >
+      <option value="">All Programs</option>
+      {programList.map((program) => (
+        <option key={program._id} value={program.programname}>
+          {program.programname}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Location Dropdown */}
+  <div className="filter-group">
+    <label htmlFor="location">Location</label>
+    <select
+      id="location"
+      value={location}
+      onChange={(e) => setLocation(e.target.value)}
+    >
+      <option value="">All Locations</option>
+      {[...new Set(programList.map((p) => p.location))].map((loc, index) => (
+        <option key={index} value={loc}>
+          {loc}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Start Date Picker */}
+  <div className="filter-group">
+    <label htmlFor="startDate">Start Date</label>
+    <input
+      id="startDate"
+      type="date"
+      value={startDate}
+      onChange={(e) => setStartDate(e.target.value)}
+    />
+  </div>
+
+  {/* End Date Picker */}
+  <div className="filter-group">
+    <label htmlFor="endDate">End Date</label>
+    <input
+      id="endDate"
+      type="date"
+      value={endDate}
+      onChange={(e) => setEndDate(e.target.value)}
+    />
+  </div>
+
+  {/* Generate Report Button */}
+  <div className="filter-group">
+    <button className="generate-btn" onClick={handleGenerateTrainingReport}>
+      Generate Report
+    </button>
+  </div>
+</div>
+
 
         {/* Stats Cards */}
         <div className="stats-container">

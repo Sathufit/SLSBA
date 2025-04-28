@@ -39,6 +39,14 @@ const FinancialHome = () => {
       throw err;
     }
   };
+  const [selectedTournament, setSelectedTournament] = useState("");
+  const [recordType, setRecordType] = useState("both"); // 'income', 'expense', or 'both'
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  const onSubmit = () => {
+    handleGenerateReport({ selectedTournament, recordType, startDate, endDate });
+  };
 
   const fetchExpenses = async () => {
     try {
@@ -79,6 +87,63 @@ const FinancialHome = () => {
       showNotification(`Failed to delete ${type}`, "error");
     }
   };
+  const handleGenerateReport = async (filters) => {
+    const { selectedTournament, recordType, startDate, endDate } = filters;
+  
+    setIsLoading(true);
+  
+    try {
+      // Only send startDate and endDate to backend
+      const payload = {
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+        ...(selectedTournament && { selectedTournament }), // ✅ Include tournament
+        ...(recordType && { recordType }), // ✅ Include recordType (income/expense/both)
+      };
+      
+  
+      const response = await axios.post(
+        `${BASE_URL}/api/finance/report/pdf`,
+        payload,
+        {
+          responseType: "blob",
+          timeout: 30000,
+          headers: { Accept: "application/pdf" },
+        }
+      );
+  
+      if (!response.data || response.data.size === 0) {
+        throw new Error("Generated PDF is empty");
+      }
+  
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const filename = `Financial_Report_${new Date().toISOString().split("T")[0]}.pdf`;
+  
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+  
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+  
+      showNotification("✅ Report generated successfully!", "success");
+    } catch (error) {
+      console.error("❌ Error generating report:", error);
+      showNotification("❌ Failed to generate report.", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // Combine all tournaments from incomes and expenses
+  const tournamentOptions = [...new Set([
+  ...incomes.map(item => item.tournamentName),
+  ...expenses.map(item => item.tournamentName)
+  ].filter(Boolean))];
 
   // Function to format date strings
   const formatDate = (dateString) => {
@@ -143,6 +208,62 @@ const FinancialHome = () => {
             </button>
           </div>
         </div>
+        <div className="finance-report-filter">
+        <div className="filter-group">
+          <label htmlFor="tournamentName">Tournament Name</label>
+          <select
+            id="tournamentName"
+            value={selectedTournament}
+            onChange={(e) => setSelectedTournament(e.target.value)}
+          >
+            <option value="">All Tournaments</option>
+            {[...new Set([
+              ...incomes.map(item => item.tournamentName),
+              ...expenses.map(item => item.tournamentName)
+            ].filter(Boolean))].map((tournamentName, index) => (
+              <option key={index} value={tournamentName}>
+                {tournamentName}
+              </option>
+            ))}
+          </select>
+        </div>
+      <div className="filter-group">
+        <label htmlFor="recordType">Record Type</label>
+        <select
+          id="recordType"
+          value={recordType}
+          onChange={(e) => setRecordType(e.target.value)}
+        >
+          <option value="both">Income + Expense</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+      </div>
+
+      <div className="filter-group">
+        <label htmlFor="startDate">Start Date</label>
+        <input
+          type="date"
+          id="startDate"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+      </div>
+
+      <div className="filter-group">
+        <label htmlFor="endDate">End Date</label>
+        <input
+          type="date"
+          id="endDate"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+      </div>
+
+      <button className="generate-btn" onClick={onSubmit}>
+        Generate Report
+      </button>
+    </div>
 
         {/* Statistics Cards */}
         <div className="finance-stats">

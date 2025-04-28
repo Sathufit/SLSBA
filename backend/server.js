@@ -51,6 +51,9 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
+const financeRoutes = require("./routes/financeRoutes");
+app.use("/api/finance", financeRoutes);
+
 
 // Connect to DB and start server
 const startServer = async () => {

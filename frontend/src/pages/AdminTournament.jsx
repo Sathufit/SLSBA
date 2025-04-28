@@ -452,20 +452,21 @@ const handleSaveTournamentEdit = async () => {
     }
   };
   const handleGenerateReport = async () => {
-    // Show loading state
     setIsLoading(true);
-    
+  
     try {
-      // Validate date range if both dates are provided
+      // Optional: Validate date range if both dates are provided
       if (startDate && endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
         if (start > end) {
-          showToast("Start date cannot be after end date", "error");
+          showToast("❌ Start date cannot be after end date", "error");
+          setIsLoading(false);
           return;
         }
       }
   
+      // Prepare filter object (send empty {} if nothing selected)
       const filterData = {
         ...(startDate && { startDate }),
         ...(endDate && { endDate }),
@@ -473,45 +474,34 @@ const handleSaveTournamentEdit = async () => {
         ...(tournamentName && { tournamentName })
       };
   
-      // Check if at least one filter is applied
-      if (Object.keys(filterData).length === 0) {
-        showToast("Please apply at least one filter", "warning");
-        return;
-      }
-  
       showToast("Generating report...", "info");
   
       const response = await axios.post(
-        `${BASE_URL}/api/tournaments/report/pdf`, 
+        `${BASE_URL}/api/tournaments/report/pdf`,
         filterData, 
         { 
           responseType: 'blob',
-          timeout: 30000, // 30 second timeout
-          headers: {
-            'Accept': 'application/pdf'
-          }
+          timeout: 30000,
+          headers: { 'Accept': 'application/pdf' }
         }
       );
   
-      // Check if response is valid PDF
-      if (response.data.size === 0) {
+      if (!response.data || response.data.size === 0) {
         throw new Error("Generated PDF is empty");
       }
   
-      // Create and download PDF
+      // Download the generated PDF
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const filename = `Tournament_Report_${new Date().toISOString().split('T')[0]}.pdf`;
   
-      // Use modern download approach
       const link = document.createElement('a');
-      link.style.display = 'none';
       link.href = url;
       link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
   
-      // Cleanup
+      // Clean up
       setTimeout(() => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
@@ -521,25 +511,22 @@ const handleSaveTournamentEdit = async () => {
   
     } catch (error) {
       console.error("❌ Error generating report:", error);
-      
-      let errorMessage = "Failed to generate report.";
-      
+  
+      let errorMessage = "❌ Failed to generate report.";
       if (error.response) {
         switch (error.response.status) {
           case 404:
-            errorMessage = "No tournaments found matching the filters.";
+            errorMessage = "❌ No tournaments found matching the filters.";
             break;
           case 400:
-            errorMessage = "Invalid filter parameters.";
+            errorMessage = "❌ Invalid filter parameters.";
             break;
           case 500:
-            errorMessage = "Server error while generating report.";
+            errorMessage = "❌ Server error while generating report.";
             break;
-          default:
-            errorMessage = "Failed to generate report. Please try again.";
         }
       } else if (error.code === 'ECONNABORTED') {
-        errorMessage = "Request timed out. Please try again.";
+        errorMessage = "❌ Request timed out. Please try again.";
       }
   
       showToast(errorMessage, "error");
@@ -547,6 +534,7 @@ const handleSaveTournamentEdit = async () => {
       setIsLoading(false);
     }
   };
+  
   
 
   // 🎯 Function to add a new player field
@@ -716,52 +704,69 @@ const addNewPlayerField = () => {
           </div>
           <div className="page-actions">
           <div className="filter-form">
-  {/* Tournament Name Dropdown */}
-  <select
-    value={tournamentName}
-    onChange={(e) => setTournamentName(e.target.value)}
-  >
-    <option value="">Select Tournament Name</option>
-    {tournamentList.map((tournament) => (
-      <option key={tournament._id} value={tournament.tournamentName}>
-        {tournament.tournamentName}
-      </option>
-    ))}
-  </select>
+              {/* Tournament Name Dropdown */}
+              <div className="filter-group">
+                <label htmlFor="tournamentName">Tournament Name</label>
+                <select
+                  id="tournamentName"
+                  value={tournamentName}
+                  onChange={(e) => setTournamentName(e.target.value)}
+                >
+                  <option value="">All Tournaments</option>
+                  {tournamentList.map((tournament) => (
+                    <option key={tournament._id} value={tournament.tournamentName}>
+                      {tournament.tournamentName}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-  {/* Venue Dropdown */}
-  <select
-    value={venue}
-    onChange={(e) => setVenue(e.target.value)}
-  >
-    <option value="">Select Venue</option>
-    {Array.from(new Set(tournamentList.map((t) => t.venue))) // Unique venues
-      .map((venueItem, index) => (
-        <option key={index} value={venueItem}>
-          {venueItem}
-        </option>
-      ))}
-  </select>
+              {/* Venue Dropdown */}
+              <div className="filter-group">
+                <label htmlFor="venue">Venue</label>
+                <select
+                  id="venue"
+                  value={venue}
+                  onChange={(e) => setVenue(e.target.value)}
+                >
+                  <option value="">All Venues</option>
+                  {[...new Set(tournamentList.map((t) => t.venue))].map((venueItem, index) => (
+                    <option key={index} value={venueItem}>
+                      {venueItem}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-  {/* Start Date */}
-  <input
-    type="date"
-    value={startDate}
-    onChange={(e) => setStartDate(e.target.value)}
-  />
+              {/* Start Date Picker */}
+              <div className="filter-group">
+                <label htmlFor="startDate">Start Date</label>
+                <input
+                  id="startDate"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
 
-  {/* End Date */}
-  <input
-    type="date"
-    value={endDate}
-    onChange={(e) => setEndDate(e.target.value)}
-  />
+              {/* End Date Picker */}
+              <div className="filter-group">
+                <label htmlFor="endDate">End Date</label>
+                <input
+                  id="endDate"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
 
-  <button onClick={handleGenerateReport}>
-    Generate Report
-  </button>
-</div>
-
+              {/* Generate Report Button */}
+              <div className="filter-group">
+                <button className="generate-btn" onClick={handleGenerateReport}>
+                  Generate Report
+                </button>
+              </div>
+            </div>
             <motion.button 
               className="action-btn secondary-btn"
               whileHover={{ scale: 1.05 }}
@@ -955,6 +960,7 @@ const addNewPlayerField = () => {
               {/* Tournament Registrations View */}
 {activeView === 'registrations' && (
   <div className="tournaments-table-wrapper">
+    <div className="table-scroll-container">
     <table className="tournaments-table">
       <thead>
         <tr>
@@ -1094,8 +1100,8 @@ const addNewPlayerField = () => {
       </tbody>
     </table>
   </div>
+  </div>
 )}
-
             </>
           )}
         </motion.div>
