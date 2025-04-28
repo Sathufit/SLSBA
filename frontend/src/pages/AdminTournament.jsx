@@ -31,6 +31,13 @@ const AdminTournaments = () => {
   const [expandedRow, setExpandedRow] = useState(null);
   const [showBracket, setShowBracket] = useState(null);
 
+  const [tournamentName, setTournamentName] = useState('');
+  const [venue, setVenue] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [tournamentNames, setTournamentNames] = useState([]);
+  const [venuesList, setVenuesList] = useState([]);
+
 
   //report
   const [showReport, setShowReport] = useState(null); // stores tournament ID
@@ -165,6 +172,14 @@ const AdminTournaments = () => {
       setLoading(true);
       const res = await axios.get(`${BASE_URL}/api/tournaments/all`);
       setTournamentList(res.data);
+  
+      // 🔥 Extract unique Tournament Names and Venues
+      const names = [...new Set(res.data.map(t => t.tournamentName))];
+      const venues = [...new Set(res.data.map(t => t.venue))];
+  
+      setTournamentNames(names);
+      setVenuesList(venues);
+  
       setLoading(false);
     } catch (error) {
       console.error("❌ Failed to fetch tournament list:", error.response?.data || error.message);
@@ -172,6 +187,7 @@ const AdminTournaments = () => {
       setLoading(false);
     }
   };
+  
   
   
   // Random payment status for demo
@@ -435,7 +451,104 @@ const handleSaveTournamentEdit = async () => {
       setLoadingReport(false);
     }
   };
+  const handleGenerateReport = async () => {
+    // Show loading state
+    setIsLoading(true);
+    
+    try {
+      // Validate date range if both dates are provided
+      if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (start > end) {
+          showToast("Start date cannot be after end date", "error");
+          return;
+        }
+      }
   
+      const filterData = {
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+        ...(venue && { venue }),
+        ...(tournamentName && { tournamentName })
+      };
+  
+      // Check if at least one filter is applied
+      if (Object.keys(filterData).length === 0) {
+        showToast("Please apply at least one filter", "warning");
+        return;
+      }
+  
+      showToast("Generating report...", "info");
+  
+      const response = await axios.post(
+        `${BASE_URL}/api/tournaments/report/pdf`, 
+        filterData, 
+        { 
+          responseType: 'blob',
+          timeout: 30000, // 30 second timeout
+          headers: {
+            'Accept': 'application/pdf'
+          }
+        }
+      );
+  
+      // Check if response is valid PDF
+      if (response.data.size === 0) {
+        throw new Error("Generated PDF is empty");
+      }
+  
+      // Create and download PDF
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const filename = `Tournament_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+  
+      // Use modern download approach
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+  
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+  
+      showToast("✅ Report generated successfully!", "success");
+  
+    } catch (error) {
+      console.error("❌ Error generating report:", error);
+      
+      let errorMessage = "Failed to generate report.";
+      
+      if (error.response) {
+        switch (error.response.status) {
+          case 404:
+            errorMessage = "No tournaments found matching the filters.";
+            break;
+          case 400:
+            errorMessage = "Invalid filter parameters.";
+            break;
+          case 500:
+            errorMessage = "Server error while generating report.";
+            break;
+          default:
+            errorMessage = "Failed to generate report. Please try again.";
+        }
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = "Request timed out. Please try again.";
+      }
+  
+      showToast(errorMessage, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+
   // 🎯 Function to add a new player field
 const addNewPlayerField = () => {
   setEditedData((prevData) => ({
@@ -602,15 +715,53 @@ const addNewPlayerField = () => {
             </button>
           </div>
           <div className="page-actions">
-            <motion.button 
-              className="action-btn secondary-btn"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setFilterOpen(!filterOpen)}
-            >
-              <Filter size={16} />
-              Filter
-            </motion.button>
+          <div className="filter-form">
+  {/* Tournament Name Dropdown */}
+  <select
+    value={tournamentName}
+    onChange={(e) => setTournamentName(e.target.value)}
+  >
+    <option value="">Select Tournament Name</option>
+    {tournamentList.map((tournament) => (
+      <option key={tournament._id} value={tournament.tournamentName}>
+        {tournament.tournamentName}
+      </option>
+    ))}
+  </select>
+
+  {/* Venue Dropdown */}
+  <select
+    value={venue}
+    onChange={(e) => setVenue(e.target.value)}
+  >
+    <option value="">Select Venue</option>
+    {Array.from(new Set(tournamentList.map((t) => t.venue))) // Unique venues
+      .map((venueItem, index) => (
+        <option key={index} value={venueItem}>
+          {venueItem}
+        </option>
+      ))}
+  </select>
+
+  {/* Start Date */}
+  <input
+    type="date"
+    value={startDate}
+    onChange={(e) => setStartDate(e.target.value)}
+  />
+
+  {/* End Date */}
+  <input
+    type="date"
+    value={endDate}
+    onChange={(e) => setEndDate(e.target.value)}
+  />
+
+  <button onClick={handleGenerateReport}>
+    Generate Report
+  </button>
+</div>
+
             <motion.button 
               className="action-btn secondary-btn"
               whileHover={{ scale: 1.05 }}

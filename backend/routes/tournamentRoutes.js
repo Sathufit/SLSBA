@@ -1,6 +1,8 @@
 const express = require("express");
 const Tournament = require("../models/Tournament"); 
 const TournamentRegistration = require("../models/TournamentRegistration");
+const PDFDocument = require('pdfkit');
+
 
 const router = express.Router();
 
@@ -198,6 +200,228 @@ router.get("/:id/report", async (req, res) => {
     res.status(500).json({ error: "Failed to generate report" });
   }
 });
+router.post("/report/pdf", async (req, res) => {
+  const { startDate, endDate, venue, tournamentName } = req.body;
+  try {
+    // Build query based on filters
+    let query = {};
+    if (startDate && endDate) {
+      query.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+    if (venue) query.venue = { $regex: venue, $options: "i" };
+    if (tournamentName) query.tournamentName = { $regex: tournamentName, $options: "i" };
 
+    const tournaments = await Tournament.find(query).sort({ date: 1 });
+    if (!tournaments.length) {
+      return res.status(404).json({ error: "No tournaments match the filter" });
+    }
+
+    // Set up PDF document
+    const doc = new PDFDocument({
+      margin: 50,
+      size: 'A4',
+      bufferPages: true,
+      autoFirstPage: false,
+    });
+
+    // Handle PDF stream errors
+    doc.on('error', (err) => {
+      console.error('PDF Generation Error:', err);
+      res.status(500).json({ error: 'PDF generation failed' });
+    });
+
+    // Set response headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="Tournament_Report_${new Date().toISOString().split('T')[0]}.pdf"`);
+    
+    // Pipe the PDF document to the response
+    const stream = doc.pipe(res);
+    stream.on('error', (err) => {
+      console.error('Stream Error:', err);
+      res.status(500).json({ error: 'Stream failed' });
+    });
+
+    // Define color scheme
+    const colors = {
+      primary: '#003f7d',
+      secondary: '#e15b29',
+      text: '#2d3748',
+      lightText: '#718096',
+      background: '#f7fafc',
+      success: '#48bb78',
+      warning: '#ed8936',
+      border: '#e2e8f0'
+    };
+
+    // Date formatter
+    const formatDate = (dateString) => {
+      if (!dateString) return '-';
+      return new Date(dateString).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      });
+    };
+
+    // Add cover page
+    doc.addPage();
+    doc.rect(0, 0, doc.page.width, doc.page.height).fill(colors.background);
+    
+    // Title Section
+    doc.fontSize(32)
+       .fillColor(colors.primary)
+       .font('Helvetica-Bold')
+       .text('Tournament Report', {
+         align: 'center',
+         y: 150
+       });
+    
+    doc.fontSize(14)
+       .fillColor(colors.lightText)
+       .text(`Generated on ${new Date().toLocaleDateString('en-GB', { 
+         dateStyle: 'full' 
+       })}`, {
+         align: 'center',
+         y: 200
+       });
+
+    // Summary Box
+    doc.rect(50, 250, doc.page.width - 100, 120)
+       .fillAndStroke(colors.primary, colors.primary);
+    doc.fontSize(14)
+       .fillColor('white')
+       .text(`Total Tournaments: ${tournaments.length}`, 70, 270)
+       .text(`Date Range: ${formatDate(startDate)} - ${formatDate(endDate)}`, 70, 300)
+       .text(`Venue Filter: ${venue || 'All Venues'}`, 70, 330);
+
+    // Tournament Details Pages
+    for (const tournament of tournaments) {
+      doc.addPage();
+
+      // Tournament Header
+      doc.rect(50, 50, doc.page.width - 100, 100)
+         .fillAndStroke(colors.primary);
+      doc.fontSize(24)
+         .fillColor('white')
+         .font('Helvetica-Bold')
+         .text(tournament.tournamentName, 70, 70);
+      doc.fontSize(12)
+         .text(`Date: ${formatDate(tournament.date)}`, 70, 100)
+         .text(`Venue: ${tournament.venue || '-'}`, 70, 120);
+
+      // Tournament Details
+      const detailsY = 180;
+      const details = [
+        { label: 'Category', value: tournament.category },
+        { label: 'Status', value: tournament.status },
+        { label: 'Coordinator', value: tournament.coordinator },
+        { label: 'Contact', value: tournament.contact },
+        { label: 'Max Participants', value: tournament.maxParticipants },
+        { label: 'Registration Deadline', value: formatDate(tournament.registrationDeadline) }
+      ];
+
+      doc.fontSize(16)
+         .fillColor(colors.secondary)
+         .font('Helvetica-Bold')
+         .text('Tournament Details', 50, detailsY);
+
+      details.forEach((detail, index) => {
+        const y = detailsY + 30 + (index * 25);
+        doc.fontSize(12)
+           .font('Helvetica-Bold')
+           .fillColor(colors.text)
+           .text(detail.label, 50, y);
+        doc.font('Helvetica')
+           .fillColor(colors.lightText)
+           .text(detail.value || '-', 200, y);
+      });
+
+      // Registrations Section
+      const registrations = await TournamentRegistration.find({ tournament: tournament._id })
+        .select("schoolName schoolID email players paymentStatus");
+
+      if (registrations.length > 0) {
+        const registrationY = detailsY + 200;
+        doc.fontSize(16)
+           .fillColor(colors.secondary)
+           .font('Helvetica-Bold')
+           .text('Registrations', 50, registrationY);
+
+        registrations.forEach((reg, index) => {
+          const yPos = registrationY + 30 + (index * 120);
+
+          // Check if we need a new page
+          if (yPos + 100 > doc.page.height - 50) {
+            doc.addPage();
+            doc.fontSize(16)
+               .fillColor(colors.secondary)
+               .font('Helvetica-Bold')
+               .text('Registrations (Continued)', 50, 50);
+            yPos = 80;
+          }
+
+          // Registration Card
+          doc.rect(50, yPos, doc.page.width - 100, 100)
+             .fillAndStroke('white', colors.border);
+          
+          // School Details
+          doc.fontSize(14)
+             .font('Helvetica-Bold')
+             .fillColor(colors.primary)
+             .text(reg.schoolName, 70, yPos + 15);
+          
+          doc.fontSize(12)
+             .font('Helvetica')
+             .fillColor(colors.text)
+             .text(`ID: ${reg.schoolID}`, 70, yPos + 40)
+             .text(`Email: ${reg.email}`, 70, yPos + 60)
+             .text(`Players: ${reg.players.length}`, 70, yPos + 80);
+
+          // Payment Status Badge
+          const badgeWidth = 80;
+          const badgeColor = reg.paymentStatus === 'Paid' ? colors.success : colors.warning;
+          doc.rect(doc.page.width - 150, yPos + 15, badgeWidth, 25)
+             .fillAndStroke(badgeColor);
+          doc.fontSize(12)
+             .fillColor('white')
+             .text(reg.paymentStatus, doc.page.width - 140, yPos + 20);
+        });
+      }
+
+      // Footer
+      doc.fontSize(10)
+         .fillColor(colors.lightText)
+         .text(`Tournament ID: ${tournament._id}`, {
+           align: 'center',
+           y: doc.page.height - 50
+         });
+    }
+
+    // Add page numbers
+    const pageCount = doc.bufferedPageCount;
+    for (let i = 0; i < pageCount; i++) {
+      doc.switchToPage(i);
+      doc.fontSize(10)
+         .fillColor(colors.lightText)
+         .text(`Page ${i + 1} of ${pageCount}`, {
+           align: 'right',
+           y: doc.page.height - 50
+         });
+    }
+
+    // Finalize the PDF
+    doc.end();
+
+  } catch (err) {
+    console.error("❌ Error generating filtered PDF report:", err);
+    res.status(500).json({ 
+      error: "Failed to generate filtered PDF report", 
+      details: err.message 
+    });
+  }
+});
 
 module.exports = router;
