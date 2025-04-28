@@ -171,17 +171,19 @@ function TrainingProgram() {
   };
 
   // Filter data based on search term
-  const filteredPrograms = programs.filter(program => 
+  const filteredPrograms = (Array.isArray(programs) ? programs : []).filter(program => 
     program.programname?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     program.trainingtype?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     program.location?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
 
-  const filteredPlayers = players.filter(player =>
+  const filteredPlayers = (Array.isArray(players) ? players : []).filter(player =>
     player.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     player.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     player.schoolname?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
   const handleEditPlayer = (player) => {
     alert(`Edit player: ${player.fullname}`);
     // You can open a modal to edit player details here if you want later
