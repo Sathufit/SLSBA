@@ -710,15 +710,6 @@ const handleDownloadExcel = async (tournamentId) => {
           <button className="menu-toggle" onClick={toggleSidebar}>
             <Menu size={24} />
           </button>
-          <div className="search-container">
-            <Search size={18} className="search-icon" />
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
           <div className="header-actions">
             <motion.div 
               className="notifications-icon"
