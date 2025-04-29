@@ -579,6 +579,28 @@ const addNewPlayerField = () => {
   }));
   
 };
+
+const handleDownloadExcel = async (tournamentId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/api/tournaments/${tournamentId}/export-excel`,
+      { responseType: "blob" } // Important for downloading files
+    );
+
+    // Create a download link
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Tournament_Registrations.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("❌ Error downloading Excel sheet:", error);
+    alert("Failed to download Excel sheet. Please try again.");
+  }
+};
+
   return (
     <div className="admin-container">
       {/* Bracket Modal */}
@@ -978,6 +1000,14 @@ const addNewPlayerField = () => {
                       onClick={() => handleDeleteTournament(tournament._id)}
                     >
                       <Trash2 size={14} /> Delete
+                    </motion.button>
+                    <motion.button
+                      className="table-action-btn download-btn"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleDownloadExcel(tournament._id)}
+                    >
+                      <Download size={14} /> Download Excel
                     </motion.button>
                   </div>
                 </td>

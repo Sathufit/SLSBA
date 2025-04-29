@@ -2,7 +2,7 @@ const express = require("express");
 const Tournament = require("../models/Tournament"); 
 const TournamentRegistration = require("../models/TournamentRegistration");
 const PDFDocument = require('pdfkit');
-
+const XLSX = require("xlsx");
 
 const router = express.Router();
 
@@ -374,6 +374,91 @@ router.post("/report/pdf", async (req, res) => {
   } catch (error) {
     console.error('Error generating PDF:', error);
     res.status(500).json({ error: 'Error generating PDF report' });
+  }
+});
+
+// 🎯 Generate Excel Sheet for Tournament Registrations
+router.get("/:id/export-excel", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch tournament details
+    const tournament = await Tournament.findById(id);
+    if (!tournament) {
+      return res.status(404).json({ error: "Tournament not found" });
+    }
+
+    // Fetch registrations for the tournament
+    const registrations = await TournamentRegistration.find({ tournament: id });
+
+    if (registrations.length === 0) {
+      return res.status(404).json({ error: "No registrations found for this tournament" });
+    }
+
+    // Prepare data for the "Registrations" sheet
+    const registrationData = registrations.map((reg, index) => ({
+      "S.No": index + 1,
+      "Full Name": reg.fullName,
+      "Email": reg.email,
+      "School Name": reg.schoolName,
+      "School ID": reg.schoolID,
+      "Players": reg.players.map((player) => `${player.name} (Age: ${player.age})`).join(", "),
+      "Payment Status": reg.paymentStatus,
+    }));
+
+    // Prepare data for the "Summary" sheet
+    const summaryData = [
+      { Key: "Tournament Name", Value: tournament.tournamentName },
+      { Key: "Category", Value: tournament.category },
+      { Key: "Date", Value: new Date(tournament.date).toLocaleDateString() },
+      { Key: "Venue", Value: tournament.venue },
+      { Key: "Total Registrations", Value: registrations.length },
+      { Key: "Coordinator", Value: tournament.coordinator || "N/A" },
+      { Key: "Contact", Value: tournament.contact || "N/A" },
+    ];
+
+    // Prepare data for the "Players" sheet
+    const playersData = [];
+    registrations.forEach((reg, regIndex) => {
+      reg.players.forEach((player, playerIndex) => {
+        playersData.push({
+          "S.No": playersData.length + 1,
+          "Player Name": player.name,
+          "Age": player.age,
+          "School Name": reg.schoolName,
+          "Registered By": reg.fullName,
+        });
+      });
+    });
+
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+
+    // Add "Summary" sheet
+    const summarySheet = XLSX.utils.json_to_sheet(summaryData, { header: ["Key", "Value"] });
+    XLSX.utils.book_append_sheet(workbook, summarySheet, "Summary");
+
+    // Add "Registrations" sheet
+    const registrationSheet = XLSX.utils.json_to_sheet(registrationData);
+    XLSX.utils.book_append_sheet(workbook, registrationSheet, "Registrations");
+
+    // Add "Players" sheet
+    const playersSheet = XLSX.utils.json_to_sheet(playersData);
+    XLSX.utils.book_append_sheet(workbook, playersSheet, "Players");
+
+    // Set response headers
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${tournament.tournamentName}_Registrations.xlsx"`
+    );
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+    // Write workbook to response
+    const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+    res.send(buffer);
+  } catch (error) {
+    console.error("❌ Error generating Excel sheet:", error);
+    res.status(500).json({ error: "Failed to generate Excel sheet" });
   }
 });
 
