@@ -1,7 +1,9 @@
 const express = require("express");
 const Income = require("../models/income");
 const Expense = require("../models/expense");
+const TournamentRegistration = require("../models/TournamentRegistration"); // ✅ Import the model
 const PDFDocument = require("pdfkit");
+const mongoose = require("mongoose");
 
 const router = express.Router();
 
@@ -160,12 +162,21 @@ router.post("/report/pdf", async (req, res) => {
 router.get("/registrations", async (req, res) => {
   try {
     const registrations = await TournamentRegistration.find()
-      .populate("tournament", "tournamentName date venue category");
+      .populate({
+        path: "tournament",
+        select: "tournamentName date",
+        strictPopulate: false,
+      });
 
-    res.status(200).json(registrations);
+    // 🛑 Additional protection: Remove broken entries manually
+    const validRegistrations = registrations.filter(reg => 
+      mongoose.Types.ObjectId.isValid(reg.tournament?._id)
+    );
+
+    res.status(200).json(validRegistrations);
   } catch (error) {
     console.error("❌ Error fetching finance registrations:", error);
-    res.status(500).json({ error: "Server Error" });
+    res.status(500).json({ error: "Server Error", details: error.message });
   }
 });
 

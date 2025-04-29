@@ -10,16 +10,40 @@ const FinancialHome = () => {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("submissions");
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
 
   const navigate = useNavigate();
   const [pendingPayments, setPendingPayments] = useState([]);
 
+  const fetchPendingPayments = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/tournaments/pending-payments`);
+      setPendingPayments(response.data);
+    } catch (error) {
+      console.error("❌ Error fetching pending payments:", error.response?.data || error.message);
+    }
+  };
+  
+  
+
   useEffect(() => {
     fetchData();
     fetchPendingPayments();
+    fetchFinanceRegistrations();
   }, []);
+
+  const [financeRegistrations, setFinanceRegistrations] = useState([]);
+
+    const fetchFinanceRegistrations = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/finance/registrations`);
+        setFinanceRegistrations(response.data);
+      } catch (error) {
+        console.error("❌ Error fetching finance registrations:", error);
+      }
+    };
+
 
 
   const fetchData = async () => {
@@ -160,27 +184,44 @@ const FinancialHome = () => {
   const totalExpense = expenses.reduce((sum, item) => sum + (item.totalExpense || 0), 0);
   const balance = totalIncome - totalExpense;
 
-  const fetchPendingPayments = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/tournaments/pending-payments`);
-      setPendingPayments(response.data);
-    } catch (error) {
-      console.error("❌ Error fetching pending payments:", error.response?.data || error.message);
-    }
-  };
+  const [activeTab, setActiveTab] = useState("records");
 
-  const approvePayment = async (registrationId) => {
+  const approvePayment = async (paymentId) => {
     try {
-      const response = await axios.put(`${BASE_URL}/api/tournaments/approve-payment/${registrationId}`);
+      const response = await axios.put(`${BASE_URL}/api/tournaments/approve-payment/${paymentId}`);
       if (response.status === 200) {
-        alert("✅ Payment approved successfully!");
-        fetchPendingPayments(); // Refresh the list
+        showNotification("✅ Payment approved successfully!", "success");
+
+        // Update the state for pendingPayments
+        setPendingPayments((prev) =>
+          prev.map((payment) =>
+            payment._id === paymentId ? { ...payment, paymentStatus: "Paid" } : payment
+          )
+        );
+
+        // Update the state for financeRegistrations
+        setFinanceRegistrations((prev) =>
+          prev.map((reg) =>
+            reg._id === paymentId ? { ...reg, paymentStatus: "Paid" } : reg
+          )
+        );
+      } else {
+        showNotification("❌ Failed to approve payment.", "error");
       }
     } catch (error) {
       console.error("❌ Error approving payment:", error.response?.data || error.message);
-      alert("❌ Failed to approve payment");
+      showNotification("❌ Error approving payment.", "error");
     }
   };
+
+  // Filter incomes and expenses based on the search query
+  const filteredIncomes = incomes.filter((income) =>
+    income.tournamentName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredExpenses = expenses.filter((expense) =>
+    expense.tournamentName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <AdminSidebar>
@@ -195,7 +236,13 @@ const FinancialHome = () => {
         <div className="admin-header">
           <div className="admin-actions">
             <div className="search-container">
-              <input type="text" placeholder="Search..." className="search-input" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+              />
             </div>
             <div className="date-display">
               Saturday, April 26, 2025
@@ -389,6 +436,15 @@ const FinancialHome = () => {
             </svg>
             Budget Requests
           </button>
+          <button 
+            className={`tab-button ${activeTab === "payments" ? "active" : ""}`} 
+            onClick={() => setActiveTab("payments")}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            All Payment Submissions
+          </button>
         </div>
 
         {/* Income Records Section */}
@@ -401,7 +457,7 @@ const FinancialHome = () => {
               </svg>
               <h2>Income Records</h2>
             </div>
-            <div className="counter">{incomes.length} items</div>
+            <div className="counter">{filteredIncomes.length} items</div>
           </div>
           
           {isLoading ? (
@@ -409,7 +465,7 @@ const FinancialHome = () => {
               <div className="loader"></div>
               <p>Loading income records...</p>
             </div>
-          ) : incomes.length === 0 ? (
+          ) : filteredIncomes.length === 0 ? (
             <div className="empty-state">
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -440,7 +496,7 @@ const FinancialHome = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {incomes.map((income) => (
+                  {filteredIncomes.map((income) => (
                     <tr key={income._id}>
                       <td className="tournament-name">{income.tournamentName}</td>
                       <td>{formatDate(income.tournamentDate)}</td>
@@ -487,7 +543,7 @@ const FinancialHome = () => {
               </svg>
               <h2>Expense Records</h2>
             </div>
-            <div className="counter">{expenses.length} items</div>
+            <div className="counter">{filteredExpenses.length} items</div>
           </div>
           
           {isLoading ? (
@@ -495,7 +551,7 @@ const FinancialHome = () => {
               <div className="loader"></div>
               <p>Loading expense records...</p>
             </div>
-          ) : expenses.length === 0 ? (
+          ) : filteredExpenses.length === 0 ? (
             <div className="empty-state">
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -526,7 +582,7 @@ const FinancialHome = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {expenses.map((expense) => (
+                  {filteredExpenses.map((expense) => (
                     <tr key={expense._id}>
                       <td className="tournament-name">{expense.tournamentName}</td>
                       <td>{formatDate(expense.tournamentDate)}</td>
@@ -557,39 +613,21 @@ const FinancialHome = () => {
             </div>
           )}
         </div>
-
-        {activeTab === "submissions" && (
+        {activeTab === "payments" && (
           <div className="finance-section card-container">
             <div className="panel-header">
-              <div className="panel-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 3v18h18"></path>
-                  <path d="M13 17h.01"></path>
-                  <path d="M13 10h.01"></path>
-                  <path d="M20 17h.01"></path>
-                  <path d="M20 10h.01"></path>
-                  <path d="M6 17h.01"></path>
-                  <path d="M6 10h.01"></path>
-                </svg>
-                <h2>Pending Payments</h2>
-              </div>
-              <div className="counter">{pendingPayments.length} items</div>
+              <h2>All Payment Submissions</h2>
+              <div className="counter">{financeRegistrations.length} items</div>
             </div>
 
             {isLoading ? (
               <div className="loading-container">
                 <div className="loader"></div>
-                <p>Loading pending payments...</p>
+                <p>Loading...</p>
               </div>
-            ) : pendingPayments.length === 0 ? (
+            ) : financeRegistrations.length === 0 ? (
               <div className="empty-state">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="12" y1="18" x2="12" y2="12"></line>
-                  <line x1="9" y1="15" x2="15" y2="15"></line>
-                </svg>
-                <p>No pending payments found.</p>
+                <p>No payment submissions found.</p>
               </div>
             ) : (
               <div className="table-responsive">
@@ -598,33 +636,51 @@ const FinancialHome = () => {
                     <tr>
                       <th>School Name</th>
                       <th>Email</th>
+                      <th>Tournament</th>
                       <th>Players</th>
-                      <th>Payment File</th>
+                      <th>Payment</th>
+                      <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {pendingPayments.map((payment) => (
-                      <tr key={payment._id}>
-                        <td>{payment.schoolName}</td>
-                        <td>{payment.email}</td>
-                        <td>{payment.players.length}</td>
+                    {financeRegistrations.map((reg) => (
+                      <tr key={reg._id}>
+                        <td>{reg.schoolName}</td>
+                        <td>{reg.email}</td>
+                        <td>{reg.tournament?.tournamentName || "-"}</td>
+                        <td>{reg.players?.length}</td>
                         <td>
-                          {payment.paymentFile ? (
-                            <a href={payment.paymentFile} target="_blank" rel="noopener noreferrer" className="view-file-link">
-                              View File
+                          {reg.paymentFile ? (
+                            <a
+                              href={reg.paymentFile}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="view-file-link"
+                            >
+                              View Upload
                             </a>
                           ) : (
-                            "No File"
+                            "No Upload"
                           )}
                         </td>
                         <td>
-                          <button 
-                            className="approve-btn" 
-                            onClick={() => approvePayment(payment._id)}
+                          <span
+                            className={`status-badge ${
+                              reg.paymentStatus?.toLowerCase() || "unknown"
+                            }`}
                           >
-                            Approve
-                          </button>
+                            {reg.paymentStatus || "Unknown"}
+                          </span>
+                        </td>
+                        <td>
+                        <button
+                          className="approve-btn"
+                          disabled={reg.paymentStatus === "Paid"}
+                          onClick={() => approvePayment(reg._id)}
+                        >
+                          {reg.paymentStatus === "Paid" ? "Approved" : "Approve"}
+                        </button>
                         </td>
                       </tr>
                     ))}
