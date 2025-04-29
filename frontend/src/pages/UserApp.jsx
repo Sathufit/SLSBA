@@ -31,17 +31,28 @@ const TrainingPrograms = () => {
   const [selectedProgram, setSelectedProgram] = useState(null);
 
   useEffect(() => {
-    setIsLoading(true);
-    axios.get(`${BASE_URL}/api/training`)
-      .then(res => {
-        setTrainings(res.data);
-        setFilteredTrainings(res.data);
+    const fetchTrainings = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`${BASE_URL}/api/training`);
+        if (Array.isArray(response.data)) {
+          setTrainings(response.data);
+          setFilteredTrainings(response.data);
+        } else {
+          console.error("Unexpected response format:", response.data);
+          setTrainings([]);
+          setFilteredTrainings([]);
+        }
+      } catch (error) {
+        console.error("Error fetching training programs:", error);
+        setTrainings([]);
+        setFilteredTrainings([]);
+      } finally {
         setIsLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching training programs", err);
-        setIsLoading(false);
-      });
+      }
+    };
+
+    fetchTrainings();
   }, []);
 
   const handleSearch = (e) => {
