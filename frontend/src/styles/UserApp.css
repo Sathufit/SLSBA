@@ -691,13 +691,16 @@
 
 /* Testimonials Section */
 .testimonials-section {
-  padding: 80px 20px;
+padding: 80px 20px;
   background-color: var(--bg-light);
+  padding: 60px 0;
+  margin: 40px 0;
 }
 
 .testimonials-content {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
 .testimonials-section .section-title {
@@ -711,20 +714,17 @@
 }
 
 .testimonials-slider {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
-  justify-content: center;
+  margin-top: 30px;
 }
 
 .testimonial-card {
   background-color: var(--white);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
   padding: 25px;
-  flex: 1;
-  min-width: 300px;
-  max-width: 400px;
+  box-shadow: var(--shadow);
   transition: var(--transition);
 }
 
@@ -734,51 +734,56 @@
 }
 
 .testimonial-quote {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--text-dark);
-  margin-bottom: 20px;
   position: relative;
   padding-left: 25px;
+  margin-bottom: 20px;
+  color: var(--text-dark);
+  font-style: italic;
+  line-height: 1.6;
 }
 
 .quote-icon {
-  color: var(--primary);
-  opacity: 0.3;
-  font-size: 1.5rem;
   position: absolute;
   left: 0;
-  top: -5px;
+  top: 0;
+  color: var(--primary);
+  font-size: 1.2rem;
 }
 
 .testimonial-author {
   display: flex;
   align-items: center;
   gap: 15px;
+  margin-top: 20px;
 }
 
 .author-avatar {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background-color: var(--primary-light);
-  background-image: url('/path/to/avatar.jpg');
-  background-size: cover;
-  background-position: center;
+  overflow: hidden;
+  border: 3px solid var(--primary-light);
+}
+
+.author-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .author-info h4 {
-  font-size: 1rem;
+  color: var(--primary);
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .author-info p {
-  font-size: 0.8rem;
   color: var(--text-light);
+  font-size: 0.9rem;
 }
 
-/* Responsive Styles */
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .hero-section h1 {
     font-size: 2.5rem;
@@ -795,6 +800,16 @@
   
   .form-row {
     flex-direction: column;
+  }
+  
+  .testimonials-slider {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 30px auto 0;
+  }
+  
+  .testimonial-card {
+    padding: 20px;
   }
   
   .testimonials-slider {

@@ -499,7 +499,9 @@ const TrainingPrograms = () => {
                 "The training program helped me improve my game tremendously. The coaches are supportive and the facilities are excellent."
               </div>
               <div className="testimonial-author">
-                <div className="author-avatar"></div>
+                <div className="author-avatar">
+                <img src="/rajiv.jpg" alt="Rajiv Perera" />
+                </div>
                 <div className="author-info">
                   <h4>Rajiv Perera</h4>
                   <p>National Junior Champion</p>
@@ -512,7 +514,9 @@ const TrainingPrograms = () => {
                 "I've been training here for two years and my skills have improved dramatically. The structured approach works very well."
               </div>
               <div className="testimonial-author">
-                <div className="author-avatar"></div>
+                <div className="author-avatar">
+                <img src="/amaya.jpg" alt="Amaya Gunawardena" />
+                </div>
                 <div className="author-info">
                   <h4>Amaya Gunawardena</h4>
                   <p>District Level Player</p>
@@ -525,7 +529,9 @@ const TrainingPrograms = () => {
                 "The coaches focus on individual development which helped me address my weaknesses. Highly recommended!"
               </div>
               <div className="testimonial-author">
-                <div className="author-avatar"></div>
+                <div className="author-avatar">
+                <img src="/dinesh.jpg" alt="Dinesh Fernando" />
+                </div>
                 <div className="author-info">
                   <h4>Dinesh Fernando</h4>
                   <p>School Team Captain</p>
