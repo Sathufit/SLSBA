@@ -10,13 +10,17 @@ const FinancialHome = () => {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("submissions");
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
-  const [activeTab, setActiveTab] = useState("records");
+
   const navigate = useNavigate();
+  const [pendingPayments, setPendingPayments] = useState([]);
 
   useEffect(() => {
     fetchData();
+    fetchPendingPayments();
   }, []);
+
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -155,6 +159,28 @@ const FinancialHome = () => {
   const totalIncome = incomes.reduce((sum, item) => sum + (item.totalIncome || 0), 0);
   const totalExpense = expenses.reduce((sum, item) => sum + (item.totalExpense || 0), 0);
   const balance = totalIncome - totalExpense;
+
+  const fetchPendingPayments = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/tournaments/pending-payments`);
+      setPendingPayments(response.data);
+    } catch (error) {
+      console.error("❌ Error fetching pending payments:", error.response?.data || error.message);
+    }
+  };
+
+  const approvePayment = async (registrationId) => {
+    try {
+      const response = await axios.put(`${BASE_URL}/api/tournaments/approve-payment/${registrationId}`);
+      if (response.status === 200) {
+        alert("✅ Payment approved successfully!");
+        fetchPendingPayments(); // Refresh the list
+      }
+    } catch (error) {
+      console.error("❌ Error approving payment:", error.response?.data || error.message);
+      alert("❌ Failed to approve payment");
+    }
+  };
 
   return (
     <AdminSidebar>
@@ -531,6 +557,83 @@ const FinancialHome = () => {
             </div>
           )}
         </div>
+
+        {activeTab === "submissions" && (
+          <div className="finance-section card-container">
+            <div className="panel-header">
+              <div className="panel-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 3v18h18"></path>
+                  <path d="M13 17h.01"></path>
+                  <path d="M13 10h.01"></path>
+                  <path d="M20 17h.01"></path>
+                  <path d="M20 10h.01"></path>
+                  <path d="M6 17h.01"></path>
+                  <path d="M6 10h.01"></path>
+                </svg>
+                <h2>Pending Payments</h2>
+              </div>
+              <div className="counter">{pendingPayments.length} items</div>
+            </div>
+
+            {isLoading ? (
+              <div className="loading-container">
+                <div className="loader"></div>
+                <p>Loading pending payments...</p>
+              </div>
+            ) : pendingPayments.length === 0 ? (
+              <div className="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                <p>No pending payments found.</p>
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="financial-table">
+                  <thead>
+                    <tr>
+                      <th>School Name</th>
+                      <th>Email</th>
+                      <th>Players</th>
+                      <th>Payment File</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pendingPayments.map((payment) => (
+                      <tr key={payment._id}>
+                        <td>{payment.schoolName}</td>
+                        <td>{payment.email}</td>
+                        <td>{payment.players.length}</td>
+                        <td>
+                          {payment.paymentFile ? (
+                            <a href={payment.paymentFile} target="_blank" rel="noopener noreferrer" className="view-file-link">
+                              View File
+                            </a>
+                          ) : (
+                            "No File"
+                          )}
+                        </td>
+                        <td>
+                          <button 
+                            className="approve-btn" 
+                            onClick={() => approvePayment(payment._id)}
+                          >
+                            Approve
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </AdminSidebar>
   );

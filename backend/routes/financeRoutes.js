@@ -157,5 +157,16 @@ router.post("/report/pdf", async (req, res) => {
     res.status(500).json({ error: "Error generating financial report" });
   }
 });
+router.get("/registrations", async (req, res) => {
+  try {
+    const registrations = await TournamentRegistration.find()
+      .populate("tournament", "tournamentName date venue category");
+
+    res.status(200).json(registrations);
+  } catch (error) {
+    console.error("❌ Error fetching finance registrations:", error);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
 
 module.exports = router;

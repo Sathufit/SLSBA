@@ -461,5 +461,31 @@ router.get("/:id/export-excel", async (req, res) => {
     res.status(500).json({ error: "Failed to generate Excel sheet" });
   }
 });
+// Get all registrations with paymentStatus = "Pending"
+router.get("/pending-payments", async (req, res) => {
+  try {
+    const pendingRegistrations = await TournamentRegistration.find({ paymentStatus: "Pending" });
+    res.status(200).json(pendingRegistrations);
+  } catch (error) {
+    console.error("❌ Error fetching pending payments:", error.message);
+    res.status(500).json({ error: "Server error fetching pending payments." });
+  }
+});
+// Approve payment by ID
+router.put("/approve-payment/:id", async (req, res) => {
+  try {
+    const updated = await TournamentRegistration.findByIdAndUpdate(
+      req.params.id,
+      { paymentStatus: "Paid", isApproved: true },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ error: "Registration not found." });
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error("❌ Error approving payment:", error.message);
+    res.status(500).json({ error: "Server error approving payment." });
+  }
+});
+
 
 module.exports = router;

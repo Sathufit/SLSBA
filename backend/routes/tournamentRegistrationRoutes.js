@@ -68,7 +68,7 @@ router.post("/register", upload.single("paymentFile"), async (req, res) => {
 
     const filePath = req.file ? req.file.filename : "";
 
-    const allowedPaymentMethods = ["upload", "onsite", "stripe"];
+    const allowedPaymentMethods = ["upload", "onsite", "Bank Transfer", "Credit Card", "PayPal"];
     if (!allowedPaymentMethods.includes(paymentMethod)) {
       return res.status(400).json({ error: "❌ Invalid payment method." });
     }
