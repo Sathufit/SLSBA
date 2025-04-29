@@ -82,10 +82,6 @@ const AdminLayout = ({ children }) => {
           <button className="menu-toggle" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}>
             <Menu size={24} />
           </button>
-          <div className="search-container">
-            <Search size={18} className="search-icon" />
-            <input type="text" placeholder="Search..." className="search-bar" />
-          </div>
         </div>
         <div className="header-right">
           <div className="date-display">{formatDate(currentTime)}</div>
