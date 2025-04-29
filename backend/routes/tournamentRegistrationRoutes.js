@@ -97,32 +97,94 @@ router.post("/register", upload.single("paymentFile"), async (req, res) => {
 
     // ✅ Send confirmation email
     try {
-      await transporter.sendMail({
-        from: `"SLSBA" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "🏸 SLSBA Tournament Registration Confirmation",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f9f9f9;">
-            <h2 style="color: #4F46E5;">Hello ${fullName},</h2>
-            <p style="font-size: 16px; color: #333;">
-              🎉 We're excited to confirm your registration for the upcoming <strong>SLSBA Tournament</strong>!
-            </p>
-            <table style="width: 100%; margin-top: 20px; font-size: 15px; color: #333;">
-              <tr><td style="padding: 8px 0;"><strong>🏫 School:</strong></td><td>${schoolName}</td></tr>
-              <tr><td style="padding: 8px 0;"><strong>🆔 Tournament ID:</strong></td><td>${tournament}</td></tr>
-            </table>
-            <p style="margin-top: 20px; font-size: 16px;">
-              We'll keep you updated with all tournament-related information as the event approaches.
-            </p>
-            <p style="margin-top: 30px; font-size: 16px;">Thank you for your participation and best of luck! 🏸</p>
-            <p style="margin-top: 40px; font-size: 14px; color: #555;">
-              Warm regards,<br />
-              <strong>Sri Lanka Schools Badminton Association (SLSBA)</strong><br />
-              📧 <a href="mailto:slsba.official@gmail.com" style="color: #4F46E5;">slsba.official@gmail.com</a>
+      const emailTemplate = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f9f9f9;">
+          <!-- Header with Logo -->
+          <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #003f7d; border-radius: 8px;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🏸 SLSBA Tournament</h1>
+            <p style="color: #e15b29; margin: 10px 0 0 0; font-size: 18px;">Registration Confirmation</p>
+          </div>
+
+          <!-- Welcome Message -->
+          <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2d3748; margin-bottom: 15px;">Welcome, ${fullName}! 👋</h2>
+            <p style="color: #4a5568; line-height: 1.6; font-size: 16px;">
+              Thank you for registering for the <strong>${tournamentExists.tournamentName}</strong>. We're excited to have you participate!
             </p>
           </div>
-        `,
+
+          <!-- Registration Details -->
+          <div style="background-color: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="color: #2d3748; margin-bottom: 15px; font-size: 18px;">Registration Details 📝</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #718096; width: 140px;">School Name:</td>
+                <td style="padding: 8px 0; color: #2d3748; font-weight: 500;">${schoolName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #718096;">School ID:</td>
+                <td style="padding: 8px 0; color: #2d3748; font-weight: 500;">${schoolID}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #718096;">Tournament:</td>
+                <td style="padding: 8px 0; color: #2d3748; font-weight: 500;">${tournamentExists.tournamentName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #718096;">Date:</td>
+                <td style="padding: 8px 0; color: #2d3748; font-weight: 500;">${new Date(tournamentExists.date).toLocaleDateString('en-GB', { 
+                  day: '2-digit', 
+                  month: 'long', 
+                  year: 'numeric' 
+                })}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #718096;">Venue:</td>
+                <td style="padding: 8px 0; color: #2d3748; font-weight: 500;">${tournamentExists.venue}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #718096;">Players:</td>
+                <td style="padding: 8px 0; color: #2d3748; font-weight: 500;">${parsedPlayers.length} registered</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #718096;">Payment:</td>
+                <td style="padding: 8px 0; color: #2d3748; font-weight: 500;">${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Next Steps -->
+          <div style="background-color: #ebf8ff; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="color: #2c5282; margin-bottom: 15px; font-size: 18px;">Next Steps 🎯</h3>
+            <ul style="color: #2c5282; margin: 0; padding-left: 20px; line-height: 1.6;">
+              <li>Keep this email for your records</li>
+              <li>Complete payment (if not done already)</li>
+              <li>Prepare your team for the tournament</li>
+              <li>Check your email regularly for updates</li>
+            </ul>
+          </div>
+
+          <!-- Footer -->
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eaeaea;">
+            <div style="text-align: center; color: #718096;">
+              <p style="margin-bottom: 10px; font-weight: bold;">Sri Lanka Schools Badminton Association</p>
+              <div style="margin-bottom: 20px;">
+                <p style="margin: 5px 0;">📧 slsba.official@gmail.com</p>
+                <p style="margin: 5px 0;">📞 +94 XX XXX XXXX</p>
+                <p style="margin: 5px 0;">🌐 www.slsba.lk</p>
+              </div>
+              <p style="font-size: 12px; color: #a0aec0;">This is an automated message. Please do not reply to this email.</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      await transporter.sendMail({
+        from: `"SLSBA Tournament Management" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: `🏸 Registration Confirmed: ${tournamentExists.tournamentName}`,
+        html: emailTemplate,
       });
+
       console.log("✅ Confirmation email sent to:", email);
     } catch (emailErr) {
       console.error("⚠️ Failed to send confirmation email:", emailErr.message);
@@ -203,6 +265,111 @@ router.put("/:id", async (req, res) => {
     res.status(200).json({ message: "✅ Registration updated successfully!", data: registration });
   } catch (error) {
     res.status(500).json({ message: "❌ Internal server error", details: error.message });
+  }
+});
+
+router.post("/:id/notify", async (req, res) => {
+  const { id } = req.params;
+  const { subject, message } = req.body;
+
+  if (!subject || !message) {
+    return res.status(400).json({ 
+      error: "❌ Subject and message are required fields." 
+    });
+  }
+
+  try {
+    // 1. Fetch tournament details
+    const tournament = await Tournament.findById(id);
+    if (!tournament) {
+      return res.status(404).json({ 
+        error: "❌ Tournament not found." 
+      });
+    }
+
+    // 2. Fetch registrations
+    const registrations = await TournamentRegistration.find({ tournament: id });
+    if (registrations.length === 0) {
+      return res.status(404).json({ 
+        error: "❌ No registered participants found for this tournament." 
+      });
+    }
+
+    // 3. Configure transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // 4. Prepare sending emails
+    const emailPromises = registrations.map(reg => {
+      if (!reg.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reg.email)) {
+        console.warn(`⚠️ Skipping invalid email: ${reg.email}`);
+        return Promise.resolve(); // Skip invalid emails
+      }
+
+      const emailTemplate = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #f9f9f9;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #003f7d; margin-bottom: 10px;">🏸 SLSBA Tournament Update</h1>
+            <h2 style="color: #e15b29;">${tournament.tournamentName}</h2>
+          </div>
+
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h2 style="color: #2d3748; margin-bottom: 15px;">Hello ${reg.fullName},</h2>
+            <div style="color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+              ${message}
+            </div>
+            <div style="background-color: #f7fafc; padding: 15px; border-radius: 6px; margin-top: 20px;">
+              <h3 style="color: #2d3748; margin-bottom: 10px;">Tournament Details</h3>
+              <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(tournament.date).toLocaleDateString()}</p>
+              <p style="margin: 5px 0;"><strong>Venue:</strong> ${tournament.venue}</p>
+              <p style="margin: 5px 0;"><strong>Category:</strong> ${tournament.category}</p>
+            </div>
+          </div>
+
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eaeaea; color: #718096;">
+            <p style="margin-bottom: 5px;">🏸 Best Regards,</p>
+            <p style="font-weight: bold; color: #2d3748;">Sri Lanka Schools Badminton Association (SLSBA)</p>
+            <div style="margin-top: 15px; font-size: 0.9em;">
+              <p>📧 Email: slsba.official@gmail.com</p>
+              <p>📞 Contact: +94 77 123 4567</p>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 20px; font-size: 0.8em; color: #a0aec0;">
+            <p>This is an automated message. Please do not reply to this email.</p>
+          </div>
+        </div>
+      `;
+
+      return transporter.sendMail({
+        from: `"SLSBA Tournament Management" <${process.env.EMAIL_USER}>`,
+        to: reg.email,
+        subject: `🏸 ${subject}`,
+        text: `Hello ${reg.fullName},\n\n${message}\n\nTournament Details:\nDate: ${new Date(tournament.date).toLocaleDateString()}\nVenue: ${tournament.venue}\nCategory: ${tournament.category}\n\n🏸 Best Regards,\nSri Lanka Schools Badminton Association (SLSBA)`,
+        html: emailTemplate,
+      });
+    });
+
+    // 5. Send all emails
+    await Promise.all(emailPromises);
+
+    // 6. Success response
+    console.log(`✅ Successfully sent notifications to ${registrations.length} participants.`);
+    res.status(200).json({ 
+      message: `✅ Notifications sent successfully to ${registrations.length} participants!` 
+    });
+
+  } catch (error) {
+    console.error("❌ Error sending notifications:", error.message);
+    res.status(500).json({ 
+      error: "❌ Failed to send notifications.",
+      details: error.message 
+    });
   }
 });
 

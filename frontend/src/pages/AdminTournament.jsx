@@ -62,6 +62,13 @@ const AdminTournaments = () => {
     paymentMethod: "Credit Card",
     paymentStatus: "Pending"
   });
+
+  // 🎯 New notification states
+  const [notificationTournamentId, setNotificationTournamentId] = useState("");
+  const [notificationSubject, setNotificationSubject] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [sendingNotification, setSendingNotification] = useState(false);
+
   
   const [editingRegistration, setEditingRegistration] = useState(null); // Registration editing
   const handleEditRegistrationClick = (registration) => {
@@ -534,6 +541,32 @@ const handleSaveTournamentEdit = async () => {
       setIsLoading(false);
     }
   };
+  const sendTournamentNotification = async () => {
+    if (!notificationTournamentId || !notificationSubject || !notificationMessage) {
+      alert("❌ Please select a tournament and fill all fields");
+      return;
+    }
+  
+    setSendingNotification(true);
+  
+    try {
+      await axios.post(`${BASE_URL}/api/tournament-registrations/${notificationTournamentId}/notify`, {
+        subject: notificationSubject,
+        message: notificationMessage,
+      });
+  
+      showToast("✅ Notification sent successfully!");
+      setNotificationTournamentId("");
+      setNotificationSubject("");
+      setNotificationMessage("");
+    } catch (error) {
+      console.error(error);
+      showToast("❌ Failed to send notification", "error");
+    } finally {
+      setSendingNotification(false);
+    }
+  };
+  
   
   
 
@@ -954,6 +987,54 @@ const addNewPlayerField = () => {
         </tbody>
       </table>
     </div>
+    <div className="notification-section">
+      <br></br>
+  <h2>📢 Send News/Notification to Tournament Registrants</h2>
+
+  <div className="form-group">
+    <label>Select Tournament:</label>
+    <select
+      value={notificationTournamentId}
+      onChange={(e) => setNotificationTournamentId(e.target.value)}
+    >
+      <option value="">-- Select Tournament --</option>
+      {tournamentList.map((t) => (
+        <option key={t._id} value={t._id}>
+          {t.tournamentName}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <div className="form-group">
+    <label>Subject:</label>
+    <input
+      type="text"
+      value={notificationSubject}
+      onChange={(e) => setNotificationSubject(e.target.value)}
+      placeholder="Enter email subject"
+    />
+  </div>
+
+  <div className="form-group">
+    <label>Message:</label>
+    <textarea
+      rows="4"
+      value={notificationMessage}
+      onChange={(e) => setNotificationMessage(e.target.value)}
+      placeholder="Enter your news/announcement message"
+    />
+  </div>
+
+  <button 
+    className="send-btn" 
+    onClick={sendTournamentNotification}
+    disabled={sendingNotification}
+  >
+    {sendingNotification ? "Sending..." : "Send Notification"}
+  </button>
+</div>
+
   </div>
 )}
 
@@ -1703,8 +1784,10 @@ const addNewPlayerField = () => {
       </motion.div>
     </motion.div>
   )}
+  
 </AnimatePresence>
     </div>
+    
   );
 };
 

@@ -562,6 +562,73 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(16, 185, 129, 0.25);
 }
+.notification-section {
+  margin-top: 40px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background-color: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.notification-section h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #4F46E5; /* Indigo color for heading */
+}
+
+.notification-section .form-group {
+  margin-bottom: 20px;
+}
+
+.notification-section .form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #374151; /* Gray-700 */
+}
+
+.notification-section .form-group select,
+.notification-section .form-group input,
+.notification-section .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #d1d5db; /* Gray-300 */
+  border-radius: 6px;
+  background-color: white;
+  transition: border 0.3s;
+}
+
+.notification-section .form-group select:focus,
+.notification-section .form-group input:focus,
+.notification-section .form-group textarea:focus {
+  outline: none;
+  border-color: #4F46E5; /* Indigo-600 */
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.notification-section .send-btn {
+  background-color: #4F46E5;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.notification-section .send-btn:hover {
+  background-color: #4338ca; /* Darker indigo on hover */
+}
+
+.notification-section .send-btn:disabled {
+  background-color: #a5b4fc; /* Lighter indigo when disabled */
+  cursor: not-allowed;
+}
 
 /* Truncated Description Cell */
 .description-cell {
