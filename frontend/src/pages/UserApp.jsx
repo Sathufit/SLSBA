@@ -31,28 +31,17 @@ const TrainingPrograms = () => {
   const [selectedProgram, setSelectedProgram] = useState(null);
 
   useEffect(() => {
-    const fetchTrainings = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get(`${BASE_URL}/api/training`);
-        if (response.status === 200 && Array.isArray(response.data)) {
-          setTrainings(response.data);
-          setFilteredTrainings(response.data);
-        } else {
-          console.error("Unexpected response format:", response.data);
-          setTrainings([]);
-          setFilteredTrainings([]);
-        }
-      } catch (error) {
-        console.error("Error fetching training programs:", error.message);
-        setTrainings([]);
-        setFilteredTrainings([]);
-      } finally {
+    setIsLoading(true);
+    axios.get(`${BASE_URL}/api/training`)
+      .then(res => {
+        setTrainings(res.data);
+        setFilteredTrainings(res.data);
         setIsLoading(false);
-      }
-    };
-
-    fetchTrainings();
+      })
+      .catch(err => {
+        console.error("Error fetching training programs", err);
+        setIsLoading(false);
+      });
   }, []);
 
   const handleSearch = (e) => {
@@ -113,7 +102,7 @@ const TrainingPrograms = () => {
     }, 100);
   };
 
-  const handleRegister = async (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
   
     const playerData = {
@@ -127,12 +116,14 @@ const TrainingPrograms = () => {
       guardianname: registerFormData.guardianname,
       guardiancontact: registerFormData.guardiancontact,
       programid: registerFormData.selectedProgramId,
-      programname: selectedProgram?.programname,
+      programname: selectedProgram?.programname,   // ✅ ADD THIS LINE
     };
+    
   
-    try {
-      const response = await axios.post(`${BASE_URL}/api/players`, playerData);
-      if (response.status === 201) {
+    console.log("🔎 Submitting playerData:", playerData);  // <--- ADD THIS
+  
+    axios.post(`${BASE_URL}/api/players`, playerData)
+      .then(() => {
         setSubmitStatus({ show: true, success: true, message: "You've successfully registered!" });
         setRegisterFormData({
           fullname: "",
@@ -150,16 +141,14 @@ const TrainingPrograms = () => {
           setSubmitStatus({ show: false, success: false, message: "" });
           setShowRegisterForm(false);
         }, 5000);
-      } else {
-        throw new Error("Unexpected response status");
-      }
-    } catch (error) {
-      console.error("❌ Registration failed:", error.response?.data || error.message);
-      setSubmitStatus({ show: true, success: false, message: "Something went wrong. Try again!" });
-      setTimeout(() => {
-        setSubmitStatus({ show: false, success: false, message: "" });
-      }, 5000);
-    }
+      })
+      .catch((err) => {
+        console.error("❌ Registration failed", err.response?.data || err.message);
+        setSubmitStatus({ show: true, success: false, message: "Something went wrong. Try again!" });
+        setTimeout(() => {
+          setSubmitStatus({ show: false, success: false, message: "" });
+        }, 5000);
+      });
   };
   
 
@@ -248,7 +237,14 @@ const TrainingPrograms = () => {
           ) : filteredTrainings.length === 0 ? (
             <div className="no-programs">
               <i className="empty-icon fas fa-folder-open"></i>
-              <p>No training programs available at the moment. Please check back later.</p>
+              <p>No training programs match your search criteria.</p>
+              <button className="reset-button" onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("All Categories");
+                setSelectedLocation("All Locations");
+                setSelectedLevel("All Levels");
+                setFilteredTrainings(trainings);
+              }}>Reset Filters</button>
             </div>
           ) : (
             <div className="programs-grid">
