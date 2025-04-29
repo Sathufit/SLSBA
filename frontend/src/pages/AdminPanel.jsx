@@ -19,6 +19,9 @@ function AdminPanel() {
   const [activeTab, setActiveTab] = useState('tickets');
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -118,6 +121,46 @@ function AdminPanel() {
         console.error('Error deleting ticket:', err);
         showNotification('Failed to delete ticket', 'error');
       }
+    }
+  };
+
+  const generateReport = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/support/report`, {
+        responseType: 'blob', // Ensure the response is treated as a file
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Support_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error generating report:', err);
+      showNotification('Failed to generate report', 'error');
+    }
+  };
+
+  const generateSupportReport = async (filters) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/api/feedback/report/pdf`, filters, {
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Support_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating report:', error);
+      showNotification('Failed to generate report', 'error');
     }
   };
 
@@ -224,6 +267,41 @@ function AdminPanel() {
             onClick={() => setActiveTab('feedback')}
           >
             <BsChat /> Feedback Submissions
+          </button>
+        </div>
+
+        {/* Filter Form */}
+        <div className="filter-form">
+          <label>Type:</label>
+          <select onChange={(e) => setActiveTab(e.target.value)} value={activeTab}>
+            <option value="both">Both</option>
+            <option value="tickets">Tickets</option>
+            <option value="feedback">Feedback</option>
+          </select>
+
+          <label>Start Date:</label>
+          <input
+            type="date"
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+
+          <label>End Date:</label>
+          <input
+            type="date"
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+
+          <button
+            className="generate-btn"
+            onClick={() =>
+              generateSupportReport({
+                type: activeTab,
+                startDate,
+                endDate,
+              })
+            }
+          >
+            Generate Report
           </button>
         </div>
 

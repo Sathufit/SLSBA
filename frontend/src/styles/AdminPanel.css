@@ -460,6 +460,27 @@
   animation: spin 1s linear infinite;
 }
 
+.generate-report-button {
+  background-color: #1d4ed8;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.generate-report-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+}
+
+.generate-report-button:active {
+  transform: translateY(0);
+}
+
 /* Empty State */
 .empty-state {
   display: flex;
@@ -728,4 +749,60 @@
   .message-content {
     max-height: none;
   }
+}
+
+/* Filter Form */
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.filter-form label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.filter-form input,
+.filter-form select {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 200px;
+  transition: border-color 0.2s;
+}
+
+.filter-form input:focus,
+.filter-form select:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+.generate-btn {
+  padding: 10px 16px;
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.generate-btn:hover {
+  background-color: #2563eb;
+}
+
+.generate-btn:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
 }
