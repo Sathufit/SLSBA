@@ -14,19 +14,12 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [stats, setStats] = useState({
-    revenue: 883000,
-    activeTournaments: 3,
-    activeTraining: 2,
-    feedbackCount: 3,
-    totalUsers: 692,
-    monthlyIncome: [
-      { month: "Jan", amount: 120000 },
-      { month: "Feb", amount: 145000 },
-      { month: "Mar", amount: 135000 },
-      { month: "Apr", amount: 160000 },
-      { month: "May", amount: 180000 },
-      { month: "Jun", amount: 143000 }
-    ]
+    revenue: 0,
+    activeTournaments: 0,
+    activeTraining: 0,
+    feedbackCount: 0,
+    totalUsers: 0,
+    monthlyIncome: []
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -62,9 +55,54 @@ const AdminDashboard = () => {
     navigate("/admin/login", { replace: true });
   };
 
-  // Changed to use dummy data instead of API calls for now
-  // This ensures the dashboard always renders without getting stuck in loading
+  // Fetch stats from backend
+  const fetchStats = async () => {
+    setIsLoading(true);
+    try {
+      const [incomeRes, tournamentsRes, trainingsRes, feedbacksRes, usersRes] = await Promise.all([
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/incomes`), // Income data
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/tournaments/all`), // Tournaments data
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/trainings`), // Training programs data
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/feedbacks`), // Feedback data
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users`) // Users data
+      ]);
+
+      // Calculate total revenue from income data
+      const totalRevenue = incomeRes.data.reduce((sum, income) => sum + income.totalIncome, 0);
+
+      // Filter active tournaments with status "Registration Open"
+      const activeTournaments = tournamentsRes.data.filter(t => t.status === "Registration Open").length;
+
+      // Count all active training programs
+      const activeTraining = trainingsRes.data.length;
+
+      // Count all feedback entries
+      const feedbackCount = feedbacksRes.data.length;
+
+      // Count all registered users
+      const totalUsers = usersRes.data.length;
+
+      // Update the stats state
+      setStats({
+        revenue: totalRevenue,
+        activeTournaments,
+        activeTraining,
+        feedbackCount,
+        totalUsers,
+        monthlyIncome: incomeRes.data.map(income => ({
+          month: new Date(income.tournamentDate).toLocaleString("default", { month: "short" }),
+          amount: income.totalIncome
+        }))
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
+    fetchStats();
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(interval);
   }, []);
@@ -79,8 +117,8 @@ const AdminDashboard = () => {
           </div>
           <div className="header-actions">
             <div className="refresh-button">
-              <button onClick={() => window.location.reload()}>
-                Refresh Dashboard
+              <button onClick={fetchStats} disabled={isLoading}>
+                {isLoading ? "Refreshing..." : "Refresh Dashboard"}
               </button>
             </div>
           </div>

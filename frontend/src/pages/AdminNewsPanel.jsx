@@ -33,6 +33,12 @@ function AdminNewsPanel() {
   const [searchTerm, setSearchTerm] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [reportFilters, setReportFilters] = useState({
+    startDate: "",
+    endDate: "",
+    category: "",
+    type: "news", // "news" or "media"
+  });
 
   useEffect(() => {
     fetchData();
@@ -224,6 +230,31 @@ function AdminNewsPanel() {
     }, 100);
   };
 
+  const handleGenerateReport = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/news/report/pdf`,
+        reportFilters,
+        {
+          responseType: "blob",
+          headers: { Accept: "application/pdf" },
+        }
+      );
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${reportFilters.type}_report.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("Error generating report:", err);
+      showNotification("Failed to generate report", "error");
+    }
+  };
+
   // Filter function for search
   const filteredNews = news.filter(item => 
     item.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -353,6 +384,54 @@ function AdminNewsPanel() {
             onClick={() => setActiveTab('media')}
           >
             <BsImages /> Media Galleries
+          </button>
+        </div>
+
+        {/* Filter Form */}
+        <div className="filter-form">
+          <div className="form-group">
+            <label>Start Date</label>
+            <input
+              type="date"
+              value={reportFilters.startDate}
+              onChange={(e) => setReportFilters({ ...reportFilters, startDate: e.target.value })}
+            />
+          </div>
+          <div className="form-group">
+            <label>End Date</label>
+            <input
+              type="date"
+              value={reportFilters.endDate}
+              onChange={(e) => setReportFilters({ ...reportFilters, endDate: e.target.value })}
+            />
+          </div>
+          <div className="form-group">
+            <label>Category</label>
+            <select
+              value={reportFilters.category}
+              onChange={(e) => setReportFilters({ ...reportFilters, category: e.target.value })}
+            >
+              <option value="">All Categories</option>
+              <option value="Event">Event</option>
+              <option value="Announcement">Announcement</option>
+              <option value="Community">Community</option>
+              <option value="Project">Project</option>
+              <option value="Update">Update</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Type</label>
+            <select
+              value={reportFilters.type}
+              onChange={(e) => setReportFilters({ ...reportFilters, type: e.target.value })}
+            >
+              <option value="news">News</option>
+              <option value="media">Media</option>
+            </select>
+          </div>
+          <button className="btn btn-submit" onClick={handleGenerateReport}>
+            Generate Report
           </button>
         </div>
 

@@ -343,7 +343,7 @@ const FinancialHome = () => {
               </svg>
             </div>
             <div className="stat-content">
-              <h3>${totalIncome.toLocaleString()}</h3>
+              <h3>Rs.{totalIncome.toLocaleString()}</h3>
               <p>Total Income</p>
             </div>
           </div>
@@ -355,7 +355,7 @@ const FinancialHome = () => {
               </svg>
             </div>
             <div className="stat-content">
-              <h3>${totalExpense.toLocaleString()}</h3>
+              <h3>Rs.{totalExpense.toLocaleString()}</h3>
               <p>Total Expenses</p>
             </div>
           </div>
@@ -368,7 +368,7 @@ const FinancialHome = () => {
               </svg>
             </div>
             <div className="stat-content">
-              <h3>${balance.toLocaleString()}</h3>
+              <h3>Rs.{balance.toLocaleString()}</h3>
               <p>Current Balance</p>
             </div>
           </div>
@@ -495,10 +495,10 @@ const FinancialHome = () => {
                     <tr key={income._id}>
                       <td className="tournament-name">{income.tournamentName}</td>
                       <td>{formatDate(income.tournamentDate)}</td>
-                      <td>${(income.entryFees || 0).toLocaleString()}</td>
-                      <td>${(income.ticketSales || 0).toLocaleString()}</td>
-                      <td>${(income.sponsorships || 0).toLocaleString()}</td>
-                      <td className="total-column">${income.totalIncome.toLocaleString()}</td>
+                      <td>Rs.{(income.entryFees || 0).toLocaleString()}</td>
+                      <td>Rs.{(income.ticketSales || 0).toLocaleString()}</td>
+                      <td>Rs.{(income.sponsorships || 0).toLocaleString()}</td>
+                      <td className="total-column">Rs.{income.totalIncome.toLocaleString()}</td>
                       <td className="action-cell">
                         <button
                           className="edit-btn"
@@ -581,10 +581,10 @@ const FinancialHome = () => {
                     <tr key={expense._id}>
                       <td className="tournament-name">{expense.tournamentName}</td>
                       <td>{formatDate(expense.tournamentDate)}</td>
-                      <td>${(expense.venueCosts || 0).toLocaleString()}</td>
-                      <td>${(expense.staffPayments || 0).toLocaleString()}</td>
-                      <td>${(expense.equipmentCosts || 0).toLocaleString()}</td>
-                      <td className="total-column">${expense.totalExpense.toLocaleString()}</td>
+                      <td>Rs.{(expense.venueCosts || 0).toLocaleString()}</td>
+                      <td>Rs.{(expense.staffPayments || 0).toLocaleString()}</td>
+                      <td>Rs.{(expense.equipmentCosts || 0).toLocaleString()}</td>
+                      <td className="total-column">Rs.{expense.totalExpense.toLocaleString()}</td>
                       <td className="action-cell">
                         <button
                           className="edit-btn"

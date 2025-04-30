@@ -229,9 +229,9 @@ const AddOrEditIncome = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="entryFees">Entry Fees ($)</label>
+                  <label htmlFor="entryFees">Entry Fees (Rs.)</label>
                   <div className="input-with-icon">
-                    <span className="currency-icon">$</span>
+                    <span className="currency-icon">Rs.</span>
                     <input 
                       id="entryFees"
                       type="number" 
@@ -250,9 +250,9 @@ const AddOrEditIncome = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="ticketSales">Ticket Sales ($)</label>
+                  <label htmlFor="ticketSales">Ticket Sales (Rs.)</label>
                   <div className="input-with-icon">
-                    <span className="currency-icon">$</span>
+                    <span className="currency-icon">Rs.</span>
                     <input 
                       id="ticketSales"
                       type="number" 
@@ -271,9 +271,9 @@ const AddOrEditIncome = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="sponsorships">Sponsorships ($)</label>
+                  <label htmlFor="sponsorships">Sponsorships (Rs.)</label>
                   <div className="input-with-icon">
-                    <span className="currency-icon">$</span>
+                    <span className="currency-icon">Rs.</span>
                     <input 
                       id="sponsorships"
                       type="number" 
@@ -292,9 +292,9 @@ const AddOrEditIncome = () => {
                 </div>
                 
                 <div className="form-group total-income">
-                  <label>Total Income ($)</label>
+                  <label>Total Income (Rs.)</label>
                   <div className="calculated-total">
-                    ${(
+                  Rs.{(
                       parseFloat(form.entryFees || 0) +
                       parseFloat(form.ticketSales || 0) +
                       parseFloat(form.sponsorships || 0)

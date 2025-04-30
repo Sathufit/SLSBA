@@ -780,6 +780,55 @@
   background-color: #e5e7eb;
 }
 
+/* Filter Form */
+.filter-form {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-form .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-form label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.filter-form input,
+.filter-form select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.filter-form button {
+  background-color: #2563eb;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.filter-form button:hover {
+  background-color: #1d4ed8;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .dashboard-header {

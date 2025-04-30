@@ -250,9 +250,9 @@ const AddOrEditExpense = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="venueCosts">Venue Costs ($)</label>
+                  <label htmlFor="venueCosts">Venue Costs (Rs.)</label>
                   <div className="input-with-icon">
-                    <span className="currency-icon">$</span>
+                    <span className="currency-icon">Rs.</span>
                     <input 
                       id="venueCosts"
                       type="number" 
@@ -271,9 +271,9 @@ const AddOrEditExpense = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="staffPayments">Staff Payments ($)</label>
+                  <label htmlFor="staffPayments">Staff Payments (Rs.)</label>
                   <div className="input-with-icon">
-                    <span className="currency-icon">$</span>
+                    <span className="currency-icon">Rs.</span>
                     <input 
                       id="staffPayments"
                       type="number" 
@@ -292,9 +292,9 @@ const AddOrEditExpense = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="equipmentCosts">Equipment Costs ($)</label>
+                  <label htmlFor="equipmentCosts">Equipment Costs (Rs.)</label>
                   <div className="input-with-icon">
-                    <span className="currency-icon">$</span>
+                    <span className="currency-icon">Rs.</span>
                     <input 
                       id="equipmentCosts"
                       type="number" 
@@ -313,9 +313,9 @@ const AddOrEditExpense = () => {
                 </div>
                 
                 <div className="form-group total-expense">
-                  <label>Total Expense ($)</label>
+                  <label>Total Expense (Rs.)</label>
                   <div className="calculated-total">
-                    ${(
+                  Rs.{(
                       parseFloat(form.venueCosts || 0) +
                       parseFloat(form.staffPayments || 0) +
                       parseFloat(form.equipmentCosts || 0)
