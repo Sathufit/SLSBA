@@ -240,23 +240,99 @@ router.get("/:id/export-excel", async (req, res) => {
 
     const tournament = await Tournament.findById(id);
     if (!tournament) {
-      return res.status(404).json({ error: "Tournament not found" });
+      return res.status(404).json({ success: false, message: "Tournament not found" });
     }
 
     const registrations = await TournamentRegistration.find({ tournament: id });
-    if (registrations.length === 0) {
-      return res.status(404).json({ error: "No registrations found for this tournament" });
+    if (!registrations.length) {
+      return res.status(404).json({ success: false, message: "No registrations found" });
     }
 
-    // ...existing Excel generation logic...
+    // Column headers with separate Player Name and Age columns
+    const headers = [
+      "Full Name",
+      "Email",
+      "School Name",
+      "School ID",
+      "Player Names",
+      "Player Ages",
+      "Payment Status",
+      "Payment Method",
+      "Registration Date"
+    ];
 
-    const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
-    res.send(buffer);
+    // Data rows
+    const dataRows = registrations.map(reg => {
+      const playerNames = (reg.players || []).map(p => p.name || "N/A").join(", ");
+      const playerAges = (reg.players || []).map(p => p.age || "?").join(", ");
+
+      return [
+        reg.fullName || "-",
+        reg.email || "-",
+        reg.schoolName || "-",
+        reg.schoolID || "-",
+        playerNames,
+        playerAges,
+        reg.paymentStatus || "Pending",
+        reg.paymentMethod || "N/A",
+        formatDate(reg.createdAt)
+      ];
+    });
+
+    const worksheetData = [headers, ...dataRows];
+    const buffer = generateExcelBuffer(worksheetData, "Registrations");
+    return sendExcelResponse(res, buffer, tournament.tournamentName);
+
   } catch (error) {
-    console.error("❌ Error generating Excel sheet:", error);
-    res.status(500).json({ error: "Failed to generate Excel sheet" });
+    console.error("❌ Excel export error:", error);
+    res.status(500).json({ success: false, message: "Failed to generate Excel export" });
   }
 });
+
+// ➕ Utility: Format date
+function formatDate(date) {
+  return new Date(date).toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit"
+  });
+}
+
+// ➕ Utility: Generate Excel file buffer
+function generateExcelBuffer(data, sheetName) {
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+  worksheet["!cols"] = calculateColumnWidths(data);
+  XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+
+  return XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+}
+
+// ➕ Utility: Auto column widths
+function calculateColumnWidths(data) {
+  const widths = data[0].map(header => Math.max(10, header.length + 2));
+  const maxRows = Math.min(data.length, 100);
+
+  for (let i = 1; i < maxRows; i++) {
+    data[i].forEach((cell, j) => {
+      const len = String(cell || "").length;
+      widths[j] = Math.max(widths[j], Math.min(50, len + 2));
+    });
+  }
+
+  return widths.map(w => ({ wch: w }));
+}
+
+// ➕ Utility: Send file as download
+function sendExcelResponse(res, buffer, tournamentName) {
+  const safeName = tournamentName.replace(/[^a-zA-Z0-9]/g, "_");
+  const filename = `Tournament_Registrations_${safeName}.xlsx`;
+
+  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  res.send(buffer);
+}
 
 // ⚠️ Keep these dynamic ones LAST
 router.get("/:id", async (req, res) => {

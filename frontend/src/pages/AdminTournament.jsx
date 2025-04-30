@@ -584,7 +584,7 @@ const handleDownloadExcel = async (tournamentId) => {
   try {
     const response = await axios.get(
       `${BASE_URL}/api/tournaments/${tournamentId}/export-excel`,
-      { responseType: "blob" } // Important for downloading files
+      { responseType: "blob" }
     );
 
     // Create a download link
@@ -597,7 +597,7 @@ const handleDownloadExcel = async (tournamentId) => {
     document.body.removeChild(link);
   } catch (error) {
     console.error("❌ Error downloading Excel sheet:", error);
-    alert("Failed to download Excel sheet. Please try again.");
+    alert(`Failed to download Excel sheet: ${error.response?.data?.error || error.message}`);
   }
 };
 
