@@ -98,22 +98,116 @@ router.post("/report/pdf", async (req, res) => {
 
     const tournaments = await Tournament.find(query).sort({ date: 1 });
     if (!tournaments.length) {
-      return res.status(404).json({ error: "No tournaments match the filter" });
+      return res.status(404).json({ error: "No tournaments match the filters." });
     }
+
+    const tournamentIds = tournaments.map((t) => t._id);
+    const registrations = await TournamentRegistration.find({ tournament: { $in: tournamentIds } }).populate("tournament");
 
     const doc = new PDFDocument({ margin: 50, size: "A4" });
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'attachment; filename="Tournament_Report.pdf"');
+    res.setHeader("Content-Disposition", `attachment; filename="Tournament_Report.pdf"`);
     doc.pipe(res);
 
-    // ...existing PDF generation logic...
+    // === Styling
+    const colors = {
+      primary: "#2E86C1",
+      text: "#212121",
+      lightText: "#555",
+      tableHeader: "#D6EAF8",
+      background: "#ffffff",
+    };
+
+    const formatDate = (date) => {
+      if (!date) return "-";
+      return new Date(date).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+    };
+
+    const drawTable = (headers, rows, startX, startY, totalWidth) => {
+      const rowHeight = 25;
+      const columnWidth = totalWidth / headers.length;
+
+      doc.rect(startX, startY, totalWidth, rowHeight).fill(colors.tableHeader);
+
+      headers.forEach((header, index) => {
+        doc.fillColor(colors.text)
+          .font("Helvetica-Bold")
+          .fontSize(10)
+          .text(header, startX + index * columnWidth + 5, startY + 8, { width: columnWidth - 10 });
+      });
+
+      rows.forEach((row, rowIndex) => {
+        const y = startY + (rowIndex + 1) * rowHeight;
+        doc.rect(startX, y, totalWidth, rowHeight)
+          .fill(rowIndex % 2 === 0 ? colors.background : colors.tableHeader);
+
+        row.forEach((cell, cellIndex) => {
+          doc.fillColor(colors.text)
+            .font("Helvetica")
+            .fontSize(9)
+            .text(cell, startX + cellIndex * columnWidth + 5, y + 8, { width: columnWidth - 10 });
+        });
+      });
+
+      return startY + (rows.length + 1) * rowHeight;
+    };
+
+    // === Cover Page
+    doc.addPage();
+    doc.fillColor(colors.primary).fontSize(30).font("Helvetica-Bold")
+      .text("Tournament Registration Report", { align: "center" });
+
+    doc.moveDown(2);
+    doc.fontSize(14).fillColor(colors.lightText).font("Helvetica")
+      .text(`Generated on: ${new Date().toLocaleString("en-GB")}`, { align: "center" });
+
+    // === Loop through each tournament
+    for (const tournament of tournaments) {
+      const relatedRegs = registrations.filter(reg => reg.tournament._id.equals(tournament._id));
+      doc.addPage();
+      doc.fontSize(20).fillColor(colors.primary).font("Helvetica-Bold")
+        .text(tournament.tournamentName, 50, 50);
+
+      doc.fontSize(12).fillColor(colors.text).font("Helvetica")
+        .text(`Venue: ${tournament.venue}`, 50, 80)
+        .text(`Date: ${formatDate(tournament.date)}`, 50, 100)
+        .text(`Total Registrations: ${relatedRegs.length}`, 50, 120);
+
+      if (relatedRegs.length > 0) {
+        const tableHeaders = ["School Name", "School ID", "Email", "Players", "Payment"];
+        const tableRows = relatedRegs.map((reg) => [
+          reg.schoolName || "-",
+          reg.schoolID || "-",
+          reg.email || "-",
+          `${reg.players?.length || 0}`,
+          reg.paymentStatus || "Pending"
+        ]);
+
+        drawTable(tableHeaders, tableRows, 50, 160, 500);
+      } else {
+        doc.fillColor(colors.lightText).fontSize(12).text("No registrations available.", 50, 160);
+      }
+    }
+
+    // === Footer Page Numbering
+    const pageCount = doc.bufferedPageCount;
+    for (let i = 0; i < pageCount; i++) {
+      doc.switchToPage(i);
+      doc.fontSize(10).fillColor(colors.lightText)
+        .text(`Page ${i + 1} of ${pageCount}`, 50, 800, { align: "center" });
+    }
 
     doc.end();
   } catch (error) {
-    console.error("Error generating PDF:", error);
-    res.status(500).json({ error: "Error generating PDF report" });
+    console.error("❌ Error generating styled PDF report:", error);
+    res.status(500).json({ error: "Error generating tournament report" });
   }
 });
+
 
 router.get("/:id/report", async (req, res) => {
   const tournamentId = req.params.id;

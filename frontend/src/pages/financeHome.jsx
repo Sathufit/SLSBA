@@ -647,8 +647,8 @@ const FinancialHome = () => {
                         <td>{reg.players?.length}</td>
                         <td>
                           {reg.paymentFile ? (
-                            <a
-                              href={reg.paymentFile}
+                              <a
+                              href={`${BASE_URL}/uploads/${reg.paymentFile}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="view-file-link"
