@@ -469,33 +469,37 @@
   gap: 8px;
 }
 
-.edit-btn, 
-.delete-btn {
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
 .edit-btn {
-  background-color: rgba(99, 102, 241, 0.1);
-  color: var(--info-color);
+  background-color: rgba(99, 102, 241, 0.1); /* Light blue background */
+  color: #6366f1; /* Blue text color */
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .edit-btn:hover {
-  background-color: rgba(99, 102, 241, 0.2);
+  background-color: rgba(99, 102, 241, 0.2); /* Darker blue on hover */
 }
 
 .delete-btn {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: var(--danger-color);
+  background-color: rgba(239, 68, 68, 0.1); /* Light red background */
+  color: #ef4444; /* Red text color */
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .delete-btn:hover {
-  background-color: rgba(239, 68, 68, 0.2);
+  background-color: rgba(239, 68, 68, 0.2); /* Darker red on hover */
+  color: white; /* White text on hover */
 }
 
 /* Loading State */

@@ -216,11 +216,19 @@ const FinancialHome = () => {
 
   // Filter incomes and expenses based on the search query
   const filteredIncomes = incomes.filter((income) =>
-    income.tournamentName.toLowerCase().includes(searchQuery.toLowerCase())
+    income.tournamentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    income.entryFees.toString().includes(searchQuery) ||
+    income.ticketSales.toString().includes(searchQuery) ||
+    income.sponsorships.toString().includes(searchQuery) ||
+    income.totalIncome.toLocaleString().includes(searchQuery)
   );
 
   const filteredExpenses = expenses.filter((expense) =>
-    expense.tournamentName.toLowerCase().includes(searchQuery.toLowerCase())
+    expense.tournamentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    expense.venueCosts.toString().includes(searchQuery) ||
+    expense.staffPayments.toString().includes(searchQuery) ||
+    expense.equipmentCosts.toString().includes(searchQuery) ||
+    expense.totalExpense.toLocaleString().includes(searchQuery)
   );
 
   return (
@@ -264,7 +272,13 @@ const FinancialHome = () => {
           
           <div className="search-refresh-container">
             <div className="finance-search">
-              <input type="text" placeholder="Search..." />
+              <input
+                type="text"
+                placeholder="Search incomes and expenses..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
             </div>
             <button className="refresh-button" onClick={fetchData}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -423,15 +437,6 @@ const FinancialHome = () => {
             Financial Records
           </button>
           <button 
-            className={`tab-button ${activeTab === "submissions" ? "active" : ""}`} 
-            onClick={() => setActiveTab("submissions")}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-            </svg>
-            Budget Requests
-          </button>
-          <button 
             className={`tab-button ${activeTab === "payments" ? "active" : ""}`} 
             onClick={() => setActiveTab("payments")}
           >
@@ -462,19 +467,7 @@ const FinancialHome = () => {
             </div>
           ) : filteredIncomes.length === 0 ? (
             <div className="empty-state">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="12" y1="18" x2="12" y2="12"></line>
-                <line x1="9" y1="15" x2="15" y2="15"></line>
-              </svg>
-              <p>No income records available</p>
-              <button 
-                className="empty-state-action" 
-                onClick={() => navigate("/admin/finance/add-income")}
-              >
-                Add your first income record
-              </button>
+              <p>No income records match your search.</p>
             </div>
           ) : (
             <div className="table-responsive">
@@ -493,24 +486,22 @@ const FinancialHome = () => {
                 <tbody>
                   {filteredIncomes.map((income) => (
                     <tr key={income._id}>
-                      <td className="tournament-name">{income.tournamentName}</td>
+                      <td>{income.tournamentName}</td>
                       <td>{formatDate(income.tournamentDate)}</td>
-                      <td>Rs.{(income.entryFees || 0).toLocaleString()}</td>
-                      <td>Rs.{(income.ticketSales || 0).toLocaleString()}</td>
-                      <td>Rs.{(income.sponsorships || 0).toLocaleString()}</td>
-                      <td className="total-column">Rs.{income.totalIncome.toLocaleString()}</td>
+                      <td>Rs.{income.entryFees.toLocaleString()}</td>
+                      <td>Rs.{income.ticketSales.toLocaleString()}</td>
+                      <td>Rs.{income.sponsorships.toLocaleString()}</td>
+                      <td>Rs.{income.totalIncome.toLocaleString()}</td>
                       <td className="action-cell">
-                        <button
-                          className="edit-btn"
+                        <button 
+                          className="edit-btn" 
                           onClick={() => navigate(`/admin/finance/edit-income/${income._id}`)}
-                          title="Edit"
                         >
-                           Edit
+                          Edit
                         </button>
-                        <button
-                          className="delete-btn"
+                        <button 
+                          className="delete-btn" 
                           onClick={() => handleDelete(income._id, "income")}
-                          title="Delete"
                         >
                           Delete
                         </button>
@@ -548,19 +539,7 @@ const FinancialHome = () => {
             </div>
           ) : filteredExpenses.length === 0 ? (
             <div className="empty-state">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="12" y1="18" x2="12" y2="12"></line>
-                <line x1="9" y1="15" x2="15" y2="15"></line>
-              </svg>
-              <p>No expense records available</p>
-              <button 
-                className="empty-state-action" 
-                onClick={() => navigate("/admin/finance/add-expense")}
-              >
-                Add your first expense record
-              </button>
+              <p>No expense records match your search.</p>
             </div>
           ) : (
             <div className="table-responsive">
@@ -579,24 +558,22 @@ const FinancialHome = () => {
                 <tbody>
                   {filteredExpenses.map((expense) => (
                     <tr key={expense._id}>
-                      <td className="tournament-name">{expense.tournamentName}</td>
+                      <td>{expense.tournamentName}</td>
                       <td>{formatDate(expense.tournamentDate)}</td>
-                      <td>Rs.{(expense.venueCosts || 0).toLocaleString()}</td>
-                      <td>Rs.{(expense.staffPayments || 0).toLocaleString()}</td>
-                      <td>Rs.{(expense.equipmentCosts || 0).toLocaleString()}</td>
-                      <td className="total-column">Rs.{expense.totalExpense.toLocaleString()}</td>
+                      <td>Rs.{expense.venueCosts.toLocaleString()}</td>
+                      <td>Rs.{expense.staffPayments.toLocaleString()}</td>
+                      <td>Rs.{expense.equipmentCosts.toLocaleString()}</td>
+                      <td>Rs.{expense.totalExpense.toLocaleString()}</td>
                       <td className="action-cell">
-                        <button
-                          className="edit-btn"
+                        <button 
+                          className="edit-btn" 
                           onClick={() => navigate(`/admin/finance/edit-expense/${expense._id}`)}
-                          title="Edit"
                         >
                           Edit
                         </button>
-                        <button
-                          className="delete-btn"
+                        <button 
+                          className="delete-btn" 
                           onClick={() => handleDelete(expense._id, "expense")}
-                          title="Delete"
                         >
                           Delete
                         </button>
