@@ -167,11 +167,12 @@ function AdminPanel() {
   const filteredTickets = (Array.isArray(tickets) ? tickets : []).filter(ticket => 
     ticket.subject?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     ticket.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    ticket.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    ticket.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    ticket.name?.toLowerCase().includes(searchTerm.toLowerCase()) // Filter by name
   );
   
   const filteredFeedbacks = (Array.isArray(feedbacks) ? feedbacks : []).filter(feedback =>
-    feedback.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    feedback.name?.toLowerCase().includes(searchTerm.toLowerCase()) || // Filter by name
     feedback.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     feedback.message?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -194,7 +195,7 @@ function AdminPanel() {
             <div className="search-container">
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search by name, email, or message..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
